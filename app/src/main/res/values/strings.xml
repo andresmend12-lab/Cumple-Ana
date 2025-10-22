@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Cumple de Ana</string>
+    <string name="locked_message">Se desbloquea el 03/12 a las 00:00 (Europe/Madrid)</string>
+    <string name="check_again">Comprobar de nuevo</string>
+    <string name="take_photo">Hacer foto</string>
+    <string name="retake_photo">Rehacer</string>
+    <string name="save_photo">Guardar</string>
+    <string name="continue">Continuar</string>
+    <string name="generate_video">Generar vídeo de recuerdos</string>
+    <string name="view_memories">Ver recuerdos</string>
+    <string name="video_params_title">Parámetros de vídeo</string>
+    <string name="video_resolution">Resolución: 1080p</string>
+    <string name="video_fps">FPS: 30</string>
+    <string name="video_duration">Duración por foto: 2.5 s</string>
+    <string name="video_crossfade">Crossfade: 0.5 s</string>
+    <string name="title_overlay_label">Overlay de títulos</string>
+    <string name="add_photos_before_video">Añade fotos antes de generar el vídeo</string>
+    <string name="no_music">Sin música</string>
+    <string name="select_music">Seleccionar música</string>
+    <string name="video_generation_in_progress">Generando vídeo...</string>
+    <string name="video_generation_success">Vídeo generado con éxito</string>
+    <string name="video_generation_error">Ha ocurrido un error al generar el vídeo</string>
+    <string name="share">Compartir</string>
+    <string name="timeline_title">Timeline</string>
+    <string name="memories_title">Recuerdos</string>
+    <string name="photos_section_title">Galería de fotos</string>
+    <string name="step_progress">Paso %1$d de %2$d</string>
+    <string name="activity_status_completed">Completada</string>
+    <string name="activity_status_locked">Bloqueada</string>
+    <string name="activity_status_available">Disponible</string>
+    <string name="open">Abrir</string>
+    <string name="no_photos_yet">Aún no hay fotos guardadas para esta actividad.</string>
+    <string name="add_more_photos">Añade recuerdos inolvidables con nuevas fotos.</string>
+    <string name="back">Volver</string>
+    <string name="camera_error">Error de cámara</string>
+</resources>
