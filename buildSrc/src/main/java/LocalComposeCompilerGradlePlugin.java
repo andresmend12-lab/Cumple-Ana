@@ -12,7 +12,7 @@ public class LocalComposeCompilerGradlePlugin implements KotlinCompilerPluginSup
     private static final String COMPOSE_PLUGIN_ID = "androidx.compose.compiler.plugins.kotlin";
     private static final String COMPOSE_COMPILER_GROUP = "androidx.compose.compiler";
     private static final String COMPOSE_COMPILER_ARTIFACT = "compiler";
-    private static final String COMPOSE_COMPILER_VERSION = "1.7.5";
+    private static final String COMPOSE_COMPILER_VERSION = "1.5.15";
 
     @Override
     public void apply(Project project) {

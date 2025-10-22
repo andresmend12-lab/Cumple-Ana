@@ -16,7 +16,6 @@ pluginManagement {
                 if (requested.id.id == "org.jetbrains.kotlin.android") {
                     useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:$version")
                 }
-                // compose plugin is provided locally via buildSrc
             }
         }
     }
