@@ -22,14 +22,21 @@ pluginManagement {
     }
 }
 
+val ffmpegKitEnabled = providers.gradleProperty("enableFfmpegKit")
+    .map(String::toBoolean)
+    .orElse(false)
+val isFfmpegEnabled = ffmpegKitEnabled.get()
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-        maven(url = uri("https://maven.arthenica.com")) {
-            content {
-                includeGroup("com.arthenica")
+        if (isFfmpegEnabled) {
+            maven(url = uri("https://maven.arthenica.com")) {
+                content {
+                    includeGroup("com.arthenica")
+                }
             }
         }
     }

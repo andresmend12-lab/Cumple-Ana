@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.example.birthday.R
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.media.VideoGenerator
+import com.example.birthday.media.createVideoGenerator
 import com.example.birthday.util.DateUtils
 import kotlinx.coroutines.launch
 
@@ -44,7 +45,7 @@ fun GenerateVideoScreen(
     val activities by repository.observeActivities().collectAsState(initial = emptyList())
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val videoGenerator = remember { VideoGenerator(context) }
+    val videoGenerator = remember { createVideoGenerator(context) }
 
     var musicUri by remember { mutableStateOf<Uri?>(null) }
     var overlayTitles by remember { mutableStateOf(true) }
@@ -77,6 +78,15 @@ fun GenerateVideoScreen(
             Text(text = stringResource(id = R.string.video_crossfade))
 
             Spacer(modifier = Modifier.padding(8.dp))
+            if (!videoGenerator.isAvailable) {
+                Text(
+                    text = videoGenerator.availabilityMessage
+                        ?: stringResource(id = R.string.video_generation_unavailable),
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -118,6 +128,12 @@ fun GenerateVideoScreen(
                 }
                 Button(
                     onClick = {
+                        if (!videoGenerator.isAvailable) {
+                            errorMessage = videoGenerator.availabilityMessage
+                                ?: stringResource(id = R.string.video_generation_unavailable)
+                            status = GenerationStatus.Error
+                            return@Button
+                        }
                         if (photos.isEmpty()) {
                             errorMessage = stringResource(id = R.string.add_photos_before_video)
                             status = GenerationStatus.Error
@@ -149,7 +165,7 @@ fun GenerateVideoScreen(
                             }
                         }
                     },
-                    enabled = status !is GenerationStatus.InProgress
+                    enabled = status !is GenerationStatus.InProgress && videoGenerator.isAvailable
                 ) {
                     Text(text = stringResource(id = R.string.generate_video))
                 }

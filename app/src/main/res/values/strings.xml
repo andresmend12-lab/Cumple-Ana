@@ -20,6 +20,7 @@
     <string name="video_generation_in_progress">Generando vídeo...</string>
     <string name="video_generation_success">Vídeo generado con éxito</string>
     <string name="video_generation_error">Ha ocurrido un error al generar el vídeo</string>
+    <string name="video_generation_unavailable">La generación de vídeo está deshabilitada en esta compilación. Activa la propiedad enableFfmpegKit en gradle.properties para habilitar ffmpeg-kit.</string>
     <string name="share">Compartir</string>
     <string name="timeline_title">Timeline</string>
     <string name="memories_title">Recuerdos</string>
