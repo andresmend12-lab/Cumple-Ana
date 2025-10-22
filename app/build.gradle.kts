@@ -54,10 +54,10 @@ android {
 
     sourceSets {
         getByName("main") {
+            // Always include the stub implementation so the app can fall back gracefully
+            java.srcDir("src/noFfmpeg/java")
             if (ffmpegKitEnabledValue) {
                 java.srcDir("src/withFfmpeg/java")
-            } else {
-                java.srcDir("src/noFfmpeg/java")
             }
         }
     }
