@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.platform
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -60,11 +58,9 @@ android {
     }
 }
 
-val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
-
 dependencies {
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
+    implementation(platform("androidx.compose:compose-bom:2024.10.01"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.10.01"))
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
