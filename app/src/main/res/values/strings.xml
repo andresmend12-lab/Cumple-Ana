@@ -5,7 +5,7 @@
     <string name="take_photo">Hacer foto</string>
     <string name="retake_photo">Rehacer</string>
     <string name="save_photo">Guardar</string>
-    <string name="continue">Continuar</string>
+    <string name="continue_button">Continuar</string>
     <string name="generate_video">Generar vídeo de recuerdos</string>
     <string name="view_memories">Ver recuerdos</string>
     <string name="video_params_title">Parámetros de vídeo</string>

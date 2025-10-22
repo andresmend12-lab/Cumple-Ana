@@ -204,7 +204,7 @@ fun ActivityDetailScreen(
                 },
                 enabled = photoUris.isNotEmpty()
             ) {
-                Text(text = stringResource(id = R.string.continue))
+                Text(text = stringResource(id = R.string.continue_button))
             }
         }
     }
