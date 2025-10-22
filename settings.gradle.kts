@@ -27,6 +27,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven(url = uri("https://maven.arthenica.com")) {
+            content {
+                includeGroup("com.arthenica")
+            }
+        }
     }
 }
 
