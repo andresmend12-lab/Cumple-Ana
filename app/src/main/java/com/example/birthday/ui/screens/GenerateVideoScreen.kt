@@ -81,7 +81,7 @@ fun GenerateVideoScreen(
             if (!videoGenerator.isAvailable) {
                 Text(
                     text = videoGenerator.availabilityMessage
-                        ?: stringResource(id = R.string.video_generation_unavailable),
+                        ?: context.getString(R.string.video_generation_unavailable),
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -105,20 +105,31 @@ fun GenerateVideoScreen(
                 }
             }
 
-            if (status is GenerationStatus.InProgress) {
+            if (status == GenerationStatus.InProgress) {
                 LinearProgressIndicator(
                     progress = progress / 100f,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp)
                 )
-                Text(text = stringResource(id = R.string.video_generation_in_progress), modifier = Modifier.padding(top = 8.dp))
+                Text(
+                    text = stringResource(id = R.string.video_generation_in_progress),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
-            if (status is GenerationStatus.Success) {
-                Text(text = stringResource(id = R.string.video_generation_success), color = MaterialTheme.colorScheme.tertiary, modifier = Modifier.padding(top = 8.dp))
+            if (status == GenerationStatus.Success) {
+                Text(
+                    text = stringResource(id = R.string.video_generation_success),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
-            if (status is GenerationStatus.Error && errorMessage != null) {
-                Text(text = errorMessage ?: "", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+            if (status == GenerationStatus.Error && errorMessage != null) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -130,12 +141,12 @@ fun GenerateVideoScreen(
                     onClick = {
                         if (!videoGenerator.isAvailable) {
                             errorMessage = videoGenerator.availabilityMessage
-                                ?: stringResource(id = R.string.video_generation_unavailable)
+                                ?: context.getString(R.string.video_generation_unavailable)
                             status = GenerationStatus.Error
                             return@Button
                         }
                         if (photos.isEmpty()) {
-                            errorMessage = stringResource(id = R.string.add_photos_before_video)
+                            errorMessage = context.getString(R.string.add_photos_before_video)
                             status = GenerationStatus.Error
                             return@Button
                         }
@@ -165,7 +176,7 @@ fun GenerateVideoScreen(
                             }
                         }
                     },
-                    enabled = status !is GenerationStatus.InProgress && videoGenerator.isAvailable
+                    enabled = status != GenerationStatus.InProgress && videoGenerator.isAvailable
                 ) {
                     Text(text = stringResource(id = R.string.generate_video))
                 }
