@@ -4,6 +4,11 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+val ffmpegKitEnabled = providers.gradleProperty("enableFfmpegKit")
+    .map(String::toBoolean)
+    .orElse(false)
+val ffmpegKitEnabledValue = ffmpegKitEnabled.get()
+
 android {
     namespace = "com.example.birthday"
     compileSdk = 34
@@ -18,6 +23,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("boolean", "FFMPEG_ENABLED", ffmpegKitEnabledValue.toString())
     }
 
     buildTypes {
@@ -41,10 +48,17 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
+    sourceSets {
+        getByName("main") {
+            // Always include the stub implementation so the app can fall back gracefully
+            java.srcDir("src/noFfmpeg/java")
+            if (ffmpegKitEnabledValue) {
+                java.srcDir("src/withFfmpeg/java")
+            }
+        }
     }
 
     packaging {
@@ -56,13 +70,15 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11"
+    }
 }
 
-val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
-
 dependencies {
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
+    implementation(platform("androidx.compose:compose-bom:2024.04.01"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.04.01"))
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
@@ -92,8 +108,9 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
 
-    // FFmpegKit
-    implementation("com.arthenica:ffmpeg-kit-full:6.0-2.LTS")
+    if (ffmpegKitEnabledValue) {
+        implementation("com.arthenica:ffmpeg-kit-full:6.0-2.LTS")
+    }
 
     implementation("com.google.android.material:material:1.12.0")
 
