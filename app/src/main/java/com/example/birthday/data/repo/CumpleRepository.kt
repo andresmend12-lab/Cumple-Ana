@@ -149,7 +149,7 @@ class CumpleRepository(
 
             if (activity.isCompleted) {
                 status = ActivityTimelineStatus.COMPLETED
-                isAvailable = false
+                isAvailable = true
                 lockReason = null
             } else if (!prevCompletedForThis) {
                 status = ActivityTimelineStatus.PENDING_PHOTO

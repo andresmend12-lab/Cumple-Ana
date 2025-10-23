@@ -11,9 +11,9 @@ import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.VolunteerActivism
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import com.example.birthday.R
+import compose.icons.TablerIcons
+import compose.icons.tablericons.Sushi
 
 object ActivityIcons {
     @Composable
@@ -25,7 +25,7 @@ object ActivityIcons {
         5 -> rememberVectorPainter(Icons.Rounded.Cake)
         6 -> rememberVectorPainter(Icons.Rounded.Spa)
         7 -> rememberVectorPainter(Icons.Rounded.Diamond)
-        8 -> painterResource(id = R.drawable.ic_sushi)
+        8 -> rememberVectorPainter(TablerIcons.Sushi)
         else -> rememberVectorPainter(Icons.Rounded.Celebration)
     }
 }
