@@ -57,6 +57,8 @@ import com.example.birthday.R
 import com.example.birthday.camera.PhotoCapture
 import com.example.birthday.data.model.ActivityCompletionResult
 import com.example.birthday.data.repo.CumpleRepository
+import com.example.birthday.ui.components.ActivityCelebrationDialog
+import com.example.birthday.ui.components.ActivityCelebrationState
 import com.example.birthday.ui.components.ActivityIcons
 import com.example.birthday.ui.components.PhotoGrid
 import com.example.birthday.util.DateUtils
@@ -88,6 +90,7 @@ fun ActivityDetailScreen(
     var showPreviousIncomplete by remember { mutableStateOf(false) }
     var countdownText by remember { mutableStateOf<String?>(null) }
     var latestSavedPhoto by remember { mutableStateOf<Uri?>(null) }
+    var celebrationState by remember { mutableStateOf<ActivityCelebrationState?>(null) }
 
     val photoCapture = remember { PhotoCapture(context) }
     val hasCameraPermission = remember {
@@ -322,10 +325,10 @@ fun ActivityDetailScreen(
                     coroutineScope.launch {
                         val result = repository.tryCompleteActivity(activityId)
                         when (result) {
-                            ActivityCompletionResult.Completed -> {
+                            is ActivityCompletionResult.Completed -> {
                                 showPreviousIncomplete = false
                                 waitingUnlockAt = null
-                                onCompleted()
+                                celebrationState = ActivityCelebrationState(result.isFinal)
                             }
                             is ActivityCompletionResult.WaitingTime -> {
                                 showPreviousIncomplete = false
@@ -395,6 +398,16 @@ fun ActivityDetailScreen(
             onRetake = { uri ->
                 photoCapture.discardPhoto(uri)
                 pendingPhoto = null
+            }
+        )
+    }
+
+    celebrationState?.let { state ->
+        ActivityCelebrationDialog(
+            state = state,
+            onConfirm = {
+                celebrationState = null
+                onCompleted()
             }
         )
     }

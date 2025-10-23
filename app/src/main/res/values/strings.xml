@@ -33,4 +33,19 @@
     <string name="latest_photo_preview">Tu última selfie</string>
     <string name="back">Volver</string>
     <string name="camera_error">Error de cámara</string>
+    <string name="celebration_completed_title">¡Sorpresa conseguida!</string>
+    <string name="celebration_completed_message">Has desbloqueado otro regalito. ¡Corre a por el siguiente!</string>
+    <string name="celebration_completed_cta">Seguir celebrando</string>
+    <string name="celebration_final_title">¡Todas las sorpresas completadas!</string>
+    <string name="celebration_final_message">Tus regalos están listos, las fotos a salvo y la fiesta sigue en el álbum.</string>
+    <string name="celebration_final_cta">Volver al timeline</string>
+    <string name="celebration_tagline">Sigue la fiesta</string>
+    <string name="memories_filter_all">Todas</string>
+    <string name="memories_share_all">Compartir todas las fotos</string>
+    <string name="memories_latest_title">Tu último recuerdo</string>
+    <string name="memories_latest_subtitle">Pulsa para verlo a pantalla completa.</string>
+    <string name="memories_section_photos">%1$d fotos</string>
+    <string name="memories_empty_cta">Cuando captures tus sorpresas favoritas aparecerán aquí con todo su brillo.</string>
+    <string name="memories_share_activity">Compartir recuerdos</string>
+    <string name="memories_open_external">Abrir en galería</string>
 </resources>

@@ -97,7 +97,7 @@ class CumpleRepository(
             }
         }
 
-        return ActivityCompletionResult.Completed
+        return ActivityCompletionResult.Completed(isFinal = nextActivity == null)
     }
 
     suspend fun isActivityCompleted(activityId: Int): Boolean {
