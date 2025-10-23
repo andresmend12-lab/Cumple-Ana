@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.birthday.BuildConfig
 import com.example.birthday.R
 import com.example.birthday.ui.components.ConfettiCanvas
 import java.util.concurrent.TimeUnit
@@ -24,7 +25,8 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun LockedScreen(
     remainingSeconds: Long,
-    onCheckAgain: () -> Unit
+    onCheckAgain: () -> Unit,
+    onSkip: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ConfettiCanvas(
@@ -60,6 +62,12 @@ fun LockedScreen(
                 )
                 Button(onClick = onCheckAgain, modifier = Modifier.padding(top = 24.dp)) {
                     Text(text = stringResource(id = R.string.check_again))
+                }
+                if (BuildConfig.DEBUG) {
+                    // TODO: Remove skip button before final release.
+                    Button(onClick = onSkip, modifier = Modifier.padding(top = 12.dp)) {
+                        Text(text = stringResource(id = R.string.skip_wait_debug))
+                    }
                 }
             }
         }
