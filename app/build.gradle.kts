@@ -1,5 +1,3 @@
-import com.android.build.api.variant.ApkVariantOutput
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -65,12 +63,8 @@ android {
 androidComponents {
     onVariants(selector().all()) { variant ->
         val appDisplayName = "Cumple de Ana"
-        variant.outputs.forEach { output ->
-            if (output is ApkVariantOutput) {
-                val suffix = if (variant.buildType == "release") "" else "-${variant.buildType}"
-                output.outputFileName.set("$appDisplayName$suffix.apk")
-            }
-        }
+        val suffix = if (variant.buildType == "release") "" else "-${variant.buildType}"
+        variant.outputs.singleOrNull()?.outputFileName?.set("$appDisplayName$suffix.apk")
     }
 }
 
