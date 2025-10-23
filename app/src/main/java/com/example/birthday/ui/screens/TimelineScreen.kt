@@ -1,7 +1,9 @@
 package com.example.birthday.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,11 +34,18 @@ import kotlinx.coroutines.launch
 fun TimelineScreen(
     repository: CumpleRepository,
     onOpenActivity: (Int) -> Unit,
-    onShowMemories: () -> Unit
+    onOpenAlbum: () -> Unit,
+    onCreateVideo: () -> Unit
 ) {
     val timelineStates by repository.observeTimelineState().collectAsState(initial = emptyList())
     val finalVideo by repository.observeFinalVideo().collectAsState(initial = null)
+    val photos by repository.observeAllPhotos().collectAsState(initial = emptyList())
     val coroutineScope = rememberCoroutineScope()
+
+    val hasPhotos = photos.isNotEmpty()
+    val allCompleted = timelineStates.isNotEmpty() && timelineStates.all { it.activity.isCompleted }
+    val showAlbumButton = hasPhotos || finalVideo != null
+    val showVideoButton = hasPhotos && (allCompleted || finalVideo != null)
 
     Box(
         modifier = Modifier
@@ -75,14 +84,28 @@ fun TimelineScreen(
                     fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
                 )
-                if (finalVideo != null) {
-                    Button(
-                        onClick = onShowMemories,
+                if (showAlbumButton || showVideoButton) {
+                    Row(
                         modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(horizontal = 24.dp)
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text(text = stringResource(id = R.string.view_memories))
+                        if (showAlbumButton) {
+                            Button(
+                                onClick = onOpenAlbum,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(text = stringResource(id = R.string.view_album))
+                            }
+                        }
+                        if (showVideoButton) {
+                            Button(
+                                onClick = onCreateVideo,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(text = stringResource(id = R.string.generate_video))
+                            }
+                        }
                     }
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {

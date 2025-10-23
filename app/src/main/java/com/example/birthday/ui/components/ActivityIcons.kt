@@ -7,7 +7,7 @@ import androidx.compose.material.icons.rounded.Coffee
 import androidx.compose.material.icons.rounded.Diamond
 import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.material.icons.rounded.FreeBreakfast
-import androidx.compose.material.icons.rounded.RamenDining
+import androidx.compose.material.icons.rounded.SetMeal
 import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.VolunteerActivism
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,7 +21,7 @@ object ActivityIcons {
         5 -> Icons.Rounded.Cake
         6 -> Icons.Rounded.Spa
         7 -> Icons.Rounded.Diamond
-        8 -> Icons.Rounded.RamenDining
+        8 -> Icons.Rounded.SetMeal
         else -> Icons.Rounded.Celebration
     }
 }

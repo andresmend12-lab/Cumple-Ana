@@ -71,8 +71,11 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                 onOpenActivity = { id ->
                     navController.navigate("${Routes.Activity}/$id")
                 },
-                onShowMemories = {
+                onOpenAlbum = {
                     navController.navigate(Routes.Memories)
+                },
+                onCreateVideo = {
+                    navController.navigate(Routes.GenerateVideo)
                 }
             )
         }

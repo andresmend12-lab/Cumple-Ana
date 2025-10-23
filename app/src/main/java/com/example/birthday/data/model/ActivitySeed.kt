@@ -26,56 +26,56 @@ object ActivitySeeds {
             id = 1,
             order = 1,
             title = "Coronación",
-            description = "Coloca la corona y sopla las velas de la primera tarta (00:00).",
+            description = "El día empieza como debe: con una reina.\nPonte la corona, sopla las velas y que empiece el reinado del caos bonito. 👑🎂",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 0, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 2,
             order = 2,
             title = "Desayuno",
-            description = "Desayuno en la cama con bacon, café y flores.",
+            description = "La realeza también desayuna... pero mejor.\nHoy el bacon cruje más, el café huele a calma y todo sabe a ti. ☕💛",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 9, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 3,
             order = 3,
             title = "Cuídate",
-            description = "Primer regalo: libro o detalle de calma/autocuidado.",
+            description = "Entre tanto brillo, hay que parar un poco.\nEste regalo no se usa: se respira.\nTómate un momento solo tuyo. 🌿",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 10, 30, 0, 0, zoneId)
         ),
         Seed(
             id = 4,
             order = 4,
             title = "Que rico el cafesito",
-            description = "Paseo o momento relax con café en tu sitio favorito.",
+            description = "A veces el café no se bebe: se comparte.\nQue este momento te sepa a risas lentas y a cosas bonitas que no se apuran. ☕✨",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 12, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 5,
             order = 5,
             title = "Una tarta nunca es suficiente",
-            description = "Merienda con tarta 3 leches (segunda tarta).",
+            description = "¿Una tarta? No, dos.\nPorque cuando se trata de dulzura, tú siempre te pasas de la medida. 🎂💞",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 15, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 6,
             order = 6,
             title = "Siempre divina",
-            description = "Regalo secundario: perfume Divine Elixir.",
+            description = "Brillas aunque no quieras (y lo sabes).\nEste detalle no es para que huelas bien, sino para que recuerdes lo bien que te sienta ser tú. 💫",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 16, 30, 0, 0, zoneId)
         ),
         Seed(
             id = 7,
             order = 7,
             title = "El amarillo te queda bien",
-            description = "Regalo principal: collar/colgante (dorado/amarillo).",
+            description = "No todo lo que brilla es oro… pero esto casi.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 18, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 8,
             order = 8,
             title = "Acabar de la mejor forma",
-            description = "Cena omakase preparada con amor.",
+            description = "Si todo lo bueno tiene un final… que sea con sushi.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 19, 0, 0, 0, zoneId)
         )
     )

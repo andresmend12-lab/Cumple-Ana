@@ -9,6 +9,7 @@
     <string name="continue_button">Continuar</string>
     <string name="generate_video">Generar vídeo de recuerdos</string>
     <string name="view_memories">Ver recuerdos</string>
+    <string name="view_album">Ver álbum</string>
     <string name="video_params_title">Parámetros de vídeo</string>
     <string name="video_resolution">Resolución: 1080p</string>
     <string name="video_fps">FPS: 30</string>
@@ -26,6 +27,7 @@
     <string name="timeline_title">Timeline</string>
     <string name="memories_title">Recuerdos</string>
     <string name="photos_section_title">Galería de fotos</string>
+    <string name="album_empty_message">Cuando hagas tus primeras fotos aparecerán aquí.</string>
     <string name="step_progress">Paso %1$d de %2$d</string>
     <string name="activity_status_completed">Hecha ✓</string>
     <string name="activity_status_ready">Listo</string>

@@ -107,22 +107,30 @@ fun MemoriesScreen(
         Text(text = stringResource(id = R.string.photos_section_title), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(12.dp))
 
-        activities.forEach { activity ->
-            val activityPhotos = photos.filter { it.activityId == activity.id }
-            if (activityPhotos.isNotEmpty()) {
-                Text(text = activity.title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 8.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(activityPhotos) { photo ->
-                        val uri = Uri.parse(photo.uri)
-                        Image(
-                            painter = rememberAsyncImagePainter(uri),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(120.dp)
-                                .background(Color.White, shape = RoundedCornerShape(24.dp))
-                                .clickable { selectedPhoto = uri }
-                                .padding(4.dp)
-                        )
+        if (photos.isEmpty()) {
+            Text(
+                text = stringResource(id = R.string.album_empty_message),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        } else {
+            activities.forEach { activity ->
+                val activityPhotos = photos.filter { it.activityId == activity.id }
+                if (activityPhotos.isNotEmpty()) {
+                    Text(text = activity.title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 8.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(activityPhotos) { photo ->
+                            val uri = Uri.parse(photo.uri)
+                            Image(
+                                painter = rememberAsyncImagePainter(uri),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .background(Color.White, shape = RoundedCornerShape(24.dp))
+                                    .clickable { selectedPhoto = uri }
+                                    .padding(4.dp)
+                            )
+                        }
                     }
                 }
             }
