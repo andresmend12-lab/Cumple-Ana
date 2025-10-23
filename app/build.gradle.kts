@@ -73,8 +73,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("io.github.alexzhirkevich:compose-icons:1.1.1")
-    implementation("io.github.alexzhirkevich:compose-icons-tabler:1.1.1")
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
