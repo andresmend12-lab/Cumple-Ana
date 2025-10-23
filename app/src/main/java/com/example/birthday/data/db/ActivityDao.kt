@@ -17,8 +17,14 @@ interface ActivityDao {
     @Query("SELECT * FROM activities WHERE id = :id")
     suspend fun getActivity(id: Int): ActivityEntity?
 
+    @Query("SELECT * FROM activities ORDER BY `order` ASC")
+    suspend fun getActivities(): List<ActivityEntity>
+
     @Update
     suspend fun update(activity: ActivityEntity)
+
+    @Update
+    suspend fun update(vararg activities: ActivityEntity)
 
     @Query("SELECT * FROM activities WHERE isCompleted = 0 ORDER BY `order` ASC LIMIT 1")
     suspend fun getNextPending(): ActivityEntity?

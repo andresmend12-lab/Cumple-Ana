@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,35 +25,27 @@ import com.example.birthday.R
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityCard
 
-private val ActivityIcons = mapOf(
-    1 to R.drawable.ic_crown,
-    2 to R.drawable.ic_breakfast,
-    3 to R.drawable.ic_gift_box,
-    4 to R.drawable.ic_coffee,
-    5 to R.drawable.ic_cake,
-    6 to R.drawable.ic_perfume,
-    7 to R.drawable.ic_necklace,
-    8 to R.drawable.ic_sushi
-)
-
 @Composable
 fun TimelineScreen(
     repository: CumpleRepository,
     onOpenActivity: (Int) -> Unit,
-    onShowMemories: () -> Unit
+    onOpenAlbum: () -> Unit
 ) {
-    val activities by repository.observeActivities().collectAsState(initial = emptyList())
-    val firstPendingOrder = activities.firstOrNull { !it.isCompleted }?.order
-    val finalVideo by repository.observeFinalVideo().collectAsState(initial = null)
-
+    val timelineStates by repository.observeTimelineState().collectAsState(initial = emptyList())
     Box(
         modifier = Modifier
             .fillMaxSize()
             .drawBehind {
-                val colors = listOf(Color(0xFFFFF9F2), Color(0xFFFFD166).copy(alpha = 0.2f), Color(0xFFFF6B6B).copy(alpha = 0.1f))
+                val colors = listOf(
+                    Color(0xFFFFF9F2),
+                    Color(0xFFFFD166).copy(alpha = 0.15f),
+                    Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                )
                 drawRect(Brush.verticalGradient(colors))
                 val waveHeight = size.height / 8f
-                val wavePaint = Brush.horizontalGradient(listOf(Color.Transparent, Color(0xFF06D6A0).copy(alpha = 0.15f)))
+                val wavePaint = Brush.horizontalGradient(
+                    listOf(Color.Transparent, Color(0xFF06D6A0).copy(alpha = 0.12f))
+                )
                 for (i in 0..5) {
                     drawRect(
                         brush = wavePaint,
@@ -64,7 +56,7 @@ fun TimelineScreen(
             }
             .padding(top = 24.dp)
     ) {
-        if (activities.isEmpty()) {
+        if (timelineStates.isEmpty()) {
             Text(
                 text = "Cargando actividades...",
                 modifier = Modifier.align(Alignment.Center)
@@ -77,28 +69,22 @@ fun TimelineScreen(
                     fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
                 )
-                if (finalVideo != null) {
-                    Button(
-                        onClick = onShowMemories,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(horizontal = 24.dp)
-                    ) {
-                        Text(text = stringResource(id = R.string.view_memories))
-                    }
+                Button(
+                    onClick = onOpenAlbum,
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = stringResource(id = R.string.view_album))
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    itemsIndexed(activities, key = { _, item -> item.id }) { index, activity ->
-                        val iconRes = ActivityIcons[activity.id] ?: R.drawable.ic_cake
-                        val isLocked = if (activity.isCompleted) false else activity.order != firstPendingOrder
+                    items(timelineStates, key = { it.activity.id }) { state ->
                         ActivityCard(
-                            activity = activity,
-                            iconRes = iconRes,
-                            position = index + 1,
-                            total = activities.size,
-                            isLocked = isLocked,
+                            state = state,
                             onClick = {
-                                if (!isLocked) onOpenActivity(activity.id)
+                                if (state.isAvailable) {
+                                    onOpenActivity(state.activity.id)
+                                }
                             }
                         )
                     }

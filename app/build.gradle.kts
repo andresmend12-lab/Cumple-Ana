@@ -1,13 +1,10 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
 }
-
-val ffmpegKitEnabled = providers.gradleProperty("enableFfmpegKit")
-    .map(String::toBoolean)
-    .orElse(false)
-val ffmpegKitEnabledValue = ffmpegKitEnabled.get()
 
 android {
     namespace = "com.example.birthday"
@@ -24,7 +21,6 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("boolean", "FFMPEG_ENABLED", ffmpegKitEnabledValue.toString())
     }
 
     buildTypes {
@@ -51,16 +47,6 @@ android {
         buildConfig = true
     }
 
-    sourceSets {
-        getByName("main") {
-            // Always include the stub implementation so the app can fall back gracefully
-            java.srcDir("src/noFfmpeg/java")
-            if (ffmpegKitEnabledValue) {
-                java.srcDir("src/withFfmpeg/java")
-            }
-        }
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -73,6 +59,17 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
+    }
+
+    @Suppress("UnstableApiUsage")
+    applicationVariants.all {
+        val buildTypeName = buildType.name
+        val appDisplayName = "Cumple de Ana"
+        val suffix = if (buildTypeName == "release") "" else "-$buildTypeName"
+
+        outputs.all {
+            (this as? BaseVariantOutputImpl)?.outputFileName = "$appDisplayName$suffix.apk"
+        }
     }
 }
 
@@ -104,14 +101,6 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.4.1")
     implementation("androidx.camera:camera-view:1.4.1")
 
-    // Media3
-    implementation("androidx.media3:media3-exoplayer:1.4.1")
-    implementation("androidx.media3:media3-ui:1.4.1")
-
-    if (ffmpegKitEnabledValue) {
-        implementation("com.arthenica:ffmpeg-kit-full:6.0-2.LTS")
-    }
-
     implementation("com.google.android.material:material:1.12.0")
 
     implementation("io.coil-kt:coil-compose:2.7.0")
@@ -119,6 +108,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
