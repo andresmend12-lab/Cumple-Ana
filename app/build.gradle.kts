@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -58,13 +60,16 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
     }
-}
 
-androidComponents {
-    onVariants(selector().all()) { variant ->
+    @Suppress("UnstableApiUsage")
+    applicationVariants.all {
+        val buildTypeName = buildType.name
         val appDisplayName = "Cumple de Ana"
-        val suffix = if (variant.buildType == "release") "" else "-${variant.buildType}"
-        variant.outputs.singleOrNull()?.outputFileName?.set("$appDisplayName$suffix.apk")
+        val suffix = if (buildTypeName == "release") "" else "-$buildTypeName"
+
+        outputs.all {
+            (this as? BaseVariantOutputImpl)?.outputFileName = "$appDisplayName$suffix.apk"
+        }
     }
 }
 
