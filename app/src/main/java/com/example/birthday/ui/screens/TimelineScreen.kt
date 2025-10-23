@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -22,18 +23,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.birthday.R
+import com.example.birthday.data.model.ActivityTimelineStatus
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityCard
+import kotlinx.coroutines.launch
 
 @Composable
 fun TimelineScreen(
     repository: CumpleRepository,
     onOpenActivity: (Int) -> Unit,
-    onOpenLocked: (Int) -> Unit,
     onShowMemories: () -> Unit
 ) {
     val timelineStates by repository.observeTimelineState().collectAsState(initial = emptyList())
     val finalVideo by repository.observeFinalVideo().collectAsState(initial = null)
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -84,15 +87,26 @@ fun TimelineScreen(
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(timelineStates, key = { it.activity.id }) { state ->
+                        val skipHandler = if (
+                            state.status == ActivityTimelineStatus.BLOCKED_TIME &&
+                            state.previousCompleted
+                        ) {
+                            {
+                                coroutineScope.launch {
+                                    repository.skipWaitForActivity(state.activity.id)
+                                }
+                            }
+                        } else {
+                            null
+                        }
                         ActivityCard(
                             state = state,
                             onClick = {
                                 if (state.isAvailable) {
                                     onOpenActivity(state.activity.id)
-                                } else {
-                                    onOpenLocked(state.activity.id)
                                 }
-                            }
+                            },
+                            onSkipWait = skipHandler
                         )
                     }
                 }

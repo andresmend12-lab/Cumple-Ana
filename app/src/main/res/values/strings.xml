@@ -2,7 +2,7 @@
     <string name="app_name">Cumple de Ana</string>
     <string name="locked_message">Se desbloquea el 03/12/2025 a las 00:00 (Europe/Madrid)</string>
     <string name="check_again">Comprobar de nuevo</string>
-    <string name="skip_wait_debug">Saltar espera (debug)</string>
+    <string name="skip_wait_debug">Saltar espera</string>
     <string name="take_photo">Hacer foto</string>
     <string name="retake_photo">Rehacer</string>
     <string name="save_photo">Guardar</string>

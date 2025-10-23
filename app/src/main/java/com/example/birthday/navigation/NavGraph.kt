@@ -71,9 +71,6 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                 onOpenActivity = { id ->
                     navController.navigate("${Routes.Activity}/$id")
                 },
-                onOpenLocked = { id ->
-                    navController.navigate("${Routes.LockedActivity}/$id")
-                },
                 onShowMemories = {
                     navController.navigate(Routes.Memories)
                 }

@@ -127,6 +127,24 @@ class CumpleRepository(
         return observePhotos(activityId).map { it.isNotEmpty() }.first()
     }
 
+    suspend fun skipWaitForActivity(activityId: Int, now: ZonedDateTime = TimeUtils.now()) {
+        val activities = activityDao.getActivities().sortedBy { it.order }
+        val activity = activities.firstOrNull { it.id == activityId } ?: return
+        val previousCompleted = activities.filter { it.order < activity.order }.all { it.isCompleted }
+        if (!previousCompleted) return
+
+        val newUnlockMillis = now.minusSeconds(1).toInstant().toEpochMilli()
+        val updated = activity.copy(
+            unlockAtEpochMillis = minOf(activity.unlockAtEpochMillis, newUnlockMillis),
+            isUnlocked = true
+        )
+        if (updated != activity) {
+            activityDao.update(updated)
+        } else if (!activity.isUnlocked) {
+            activityDao.update(activity.copy(isUnlocked = true))
+        }
+    }
+
     private fun buildTimelineStates(
         activities: List<ActivityEntity>,
         now: ZonedDateTime,

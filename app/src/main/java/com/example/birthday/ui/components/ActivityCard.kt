@@ -31,7 +31,8 @@ import androidx.compose.ui.res.stringResource
 fun ActivityCard(
     state: ActivityTimelineState,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSkipWait: (() -> Unit)? = null
 ) {
     val activity = state.activity
     val icon = ActivityIcons.forId(activity.id)
@@ -48,13 +49,13 @@ fun ActivityCard(
         ActivityTimelineStatus.BLOCKED_TIME -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
-    val primaryStatusText = when (state.status) {
+    val primaryStatusText: String? = when (state.status) {
         ActivityTimelineStatus.BLOCKED_TIME ->
             stringResource(
                 id = R.string.activity_status_locked_time_with_hour,
                 TimeUtils.formatUnlockTime(state.unlockAt)
             )
-        ActivityTimelineStatus.PENDING_PHOTO -> stringResource(id = R.string.activity_status_pending_photo)
+        ActivityTimelineStatus.PENDING_PHOTO -> null
         ActivityTimelineStatus.AVAILABLE -> stringResource(id = R.string.activity_status_ready)
         ActivityTimelineStatus.COMPLETED -> stringResource(id = R.string.activity_status_completed)
     }
@@ -64,8 +65,12 @@ fun ActivityCard(
         else -> null
     }
 
-    val countdown = remember(state.timeRemaining, state.hasPhoto, state.status) {
-        if (state.status == ActivityTimelineStatus.BLOCKED_TIME && state.timeRemaining != null && state.hasPhoto) {
+    val countdown = remember(state.timeRemaining, state.status, state.previousCompleted) {
+        if (
+            state.status == ActivityTimelineStatus.BLOCKED_TIME &&
+            state.timeRemaining != null &&
+            state.previousCompleted
+        ) {
             TimeUtils.formatDuration(state.timeRemaining)
         } else {
             null
@@ -77,6 +82,7 @@ fun ActivityCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         onClick = onClick,
+        enabled = state.isAvailable,
         shape = RoundedCornerShape(28.dp),
         color = backgroundColor,
         tonalElevation = 4.dp
@@ -111,16 +117,18 @@ fun ActivityCard(
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = foregroundColor
                 )
-                Surface(
-                    shape = RoundedCornerShape(50),
-                    color = Color.White.copy(alpha = 0.55f)
-                ) {
-                    Text(
-                        text = primaryStatusText,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                primaryStatusText?.let { statusText ->
+                    Surface(
+                        shape = RoundedCornerShape(50),
+                        color = Color.White.copy(alpha = 0.55f)
+                    ) {
+                        Text(
+                            text = statusText,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
                 secondaryMessage?.let { message ->
                     Text(
@@ -135,6 +143,14 @@ fun ActivityCard(
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, fontWeight = FontWeight.Medium),
                         color = foregroundColor
                     )
+                }
+                if (onSkipWait != null && state.status == ActivityTimelineStatus.BLOCKED_TIME && state.previousCompleted) {
+                    androidx.compose.material3.TextButton(onClick = onSkipWait) {
+                        Text(
+                            text = stringResource(id = R.string.skip_wait_debug),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }
