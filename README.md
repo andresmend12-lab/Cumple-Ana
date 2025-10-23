@@ -5,7 +5,7 @@ Aplicación Android para organizar actividades y generar un video resumen del cu
 ## Requisitos previos
 
 - Android Studio Ladybug (o más reciente) con el Android Gradle Plugin 8.7 y JDK 17 instalados.
-- Kotlin 2.0.21 (ya configurado en el proyecto).
+- Kotlin 1.9.22 (ya configurado en el proyecto).
 - Android SDK 34 y herramientas de compilación actualizadas.
 - Conexión a internet para la sincronización inicial de dependencias.
 
@@ -38,5 +38,5 @@ Esto permite compilar y probar la aplicación incluso sin la dependencia nativa.
 ## Problemas conocidos
 
 - Las tareas que requieren el SDK de Android (por ejemplo `:app:assembleDebug`) fallarán en entornos donde el SDK no esté instalado. Instala el SDK mediante Android Studio o configura la variable `ANDROID_HOME` para resolverlo.
-- El proyecto añade automáticamente la bandera `suppressKotlinVersionCompatibilityCheck` al compilador de Compose para que Kotlin 2.0.21 sea aceptado; no es necesario realizar pasos adicionales.
+- El proyecto usa una versión de Kotlin compatible con el compilador de Compose incluido, por lo que no es necesario aplicar banderas adicionales.
 
