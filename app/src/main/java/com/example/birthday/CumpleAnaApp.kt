@@ -3,6 +3,8 @@ package com.example.birthday
 import android.app.Application
 import com.example.birthday.data.db.AppDatabase
 import com.example.birthday.data.repo.CumpleRepository
+import com.example.birthday.notification.ActivityUnlockScheduler
+import com.example.birthday.notification.NotificationHelper
 
 class CumpleAnaApp : Application() {
     lateinit var repository: CumpleRepository
@@ -16,5 +18,7 @@ class CumpleAnaApp : Application() {
             photoDao = database.photoDao(),
             videoDao = database.videoDao()
         )
+        NotificationHelper.ensureChannel(this)
+        ActivityUnlockScheduler.scheduleAll(this)
     }
 }

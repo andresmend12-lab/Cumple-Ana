@@ -13,6 +13,7 @@ import com.example.birthday.LocalRepository
 import com.example.birthday.gate.TimeGate
 import com.example.birthday.ui.screens.ActivityDetailScreen
 import com.example.birthday.ui.screens.GenerateVideoScreen
+import com.example.birthday.ui.screens.LockedActivityScreen
 import com.example.birthday.ui.screens.LockedScreen
 import com.example.birthday.ui.screens.MemoriesScreen
 import com.example.birthday.ui.screens.TimelineScreen
@@ -24,6 +25,7 @@ object Routes {
     const val Locked = "locked"
     const val Timeline = "timeline"
     const val Activity = "activity"
+    const val LockedActivity = "lockedActivity"
     const val GenerateVideo = "generateVideo"
     const val Memories = "memories"
 }
@@ -69,6 +71,9 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                 onOpenActivity = { id ->
                     navController.navigate("${Routes.Activity}/$id")
                 },
+                onOpenLocked = { id ->
+                    navController.navigate("${Routes.LockedActivity}/$id")
+                },
                 onShowMemories = {
                     navController.navigate(Routes.Memories)
                 }
@@ -87,6 +92,15 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                         navController.navigate(Routes.GenerateVideo)
                     }
                 }
+            )
+        }
+        composable("${Routes.LockedActivity}/{activityId}") { backStackEntry ->
+            val repository = LocalRepository.current
+            val id = backStackEntry.arguments?.getString("activityId")?.toIntOrNull() ?: return@composable
+            LockedActivityScreen(
+                activityId = id,
+                repository = repository,
+                onBack = { navController.popBackStack() }
             )
         }
         composable(Routes.GenerateVideo) {

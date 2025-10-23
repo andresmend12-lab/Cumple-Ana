@@ -9,5 +9,8 @@ data class ActivityEntity(
     val title: String,
     val description: String,
     val order: Int,
+    val unlockAtEpochMillis: Long,
+    val photoCompleted: Boolean,
+    val isUnlocked: Boolean,
     val isCompleted: Boolean
 )

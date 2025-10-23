@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Cumple de Ana</string>
-    <string name="locked_message">Se desbloquea el 03/12 a las 00:00 (Europe/Madrid)</string>
+    <string name="locked_message">Se desbloquea el 03/12/2025 a las 00:00 (Europe/Madrid)</string>
     <string name="check_again">Comprobar de nuevo</string>
     <string name="skip_wait_debug">Saltar espera (debug)</string>
     <string name="take_photo">Hacer foto</string>
@@ -27,9 +27,19 @@
     <string name="memories_title">Recuerdos</string>
     <string name="photos_section_title">Galería de fotos</string>
     <string name="step_progress">Paso %1$d de %2$d</string>
-    <string name="activity_status_completed">Completada</string>
-    <string name="activity_status_locked">Bloqueada</string>
-    <string name="activity_status_available">Disponible</string>
+    <string name="activity_status_completed">Hecha ✓</string>
+    <string name="activity_status_ready">Listo</string>
+    <string name="activity_status_pending_photo">Añade una foto para continuar</string>
+    <string name="activity_status_locked_time_with_hour">Disponible a las %1$s</string>
+    <string name="activity_status_previous_incomplete">Completa la actividad anterior para continuar</string>
+    <string name="locked_activity_waiting_time">Disponible a las %1$s</string>
+    <string name="locked_activity_missing_photo">Añade una foto en esta actividad para continuar.</string>
+    <string name="locked_activity_generic">Esta actividad todavía no está lista.</string>
+    <string name="activity_wait_until">Se habilitará a las %1$s</string>
+    <string name="notification_channel_activities">Sorpresas</string>
+    <string name="notification_channel_activities_desc">Avisos cuando una nueva sorpresa esté disponible</string>
+    <string name="notification_unlock_title">¡Nueva sorpresa disponible!</string>
+    <string name="notification_unlock_body">Ya puedes disfrutar de “%1$s”.</string>
     <string name="open">Abrir</string>
     <string name="no_photos_yet">Aún no hay fotos guardadas para esta actividad.</string>
     <string name="add_more_photos">Añade recuerdos inolvidables con nuevas fotos.</string>

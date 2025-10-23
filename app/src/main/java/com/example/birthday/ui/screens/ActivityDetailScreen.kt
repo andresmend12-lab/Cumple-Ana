@@ -43,8 +43,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.viewinterop.AndroidView
@@ -52,10 +52,17 @@ import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
 import com.example.birthday.R
 import com.example.birthday.camera.PhotoCapture
+import com.example.birthday.data.model.ActivityCompletionResult
 import com.example.birthday.data.repo.CumpleRepository
+import com.example.birthday.ui.components.ActivityIcons
 import com.example.birthday.ui.components.PhotoGrid
 import com.example.birthday.util.DateUtils
+import com.example.birthday.util.TimeUtils
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.Instant
+import java.time.ZonedDateTime
 
 @Composable
 fun ActivityDetailScreen(
@@ -74,6 +81,9 @@ fun ActivityDetailScreen(
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     var pendingPhoto by remember { mutableStateOf<Uri?>(null) }
     var cameraError by remember { mutableStateOf<String?>(null) }
+    var waitingUnlockAt by remember { mutableStateOf<ZonedDateTime?>(null) }
+    var showPreviousIncomplete by remember { mutableStateOf(false) }
+    var countdownText by remember { mutableStateOf<String?>(null) }
 
     val photoCapture = remember { PhotoCapture(context) }
     val hasCameraPermission = remember {
@@ -90,6 +100,30 @@ fun ActivityDetailScreen(
     }
 
     val photoUris = photos.mapNotNull { runCatching { Uri.parse(it.uri) }.getOrNull() }
+    val unlockAt = activity?.unlockAtEpochMillis?.let { Instant.ofEpochMilli(it).atZone(TimeUtils.zoneId) }
+
+    LaunchedEffect(unlockAt, activity?.photoCompleted) {
+        countdownText = null
+        val target = unlockAt
+        if (activity?.photoCompleted == true && target != null) {
+            while (true) {
+                val now = TimeUtils.now()
+                if (now.isBefore(target)) {
+                    countdownText = TimeUtils.formatDuration(Duration.between(now, target))
+                    delay(1_000)
+                } else {
+                    countdownText = null
+                    break
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(countdownText) {
+        if (countdownText == null) {
+            waitingUnlockAt = null
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -111,20 +145,10 @@ fun ActivityDetailScreen(
                     .padding(top = 72.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val iconRes = when (activity?.id) {
-                    1 -> R.drawable.ic_crown
-                    2 -> R.drawable.ic_breakfast
-                    3 -> R.drawable.ic_gift_box
-                    4 -> R.drawable.ic_coffee
-                    5 -> R.drawable.ic_cake
-                    6 -> R.drawable.ic_perfume
-                    7 -> R.drawable.ic_necklace
-                    8 -> R.drawable.ic_sushi
-                    else -> R.drawable.ic_cake
-                }
-                Image(
-                    painter = painterResource(id = iconRes),
+                Icon(
+                    imageVector = ActivityIcons.forId(activity?.id ?: 0),
                     contentDescription = null,
+                    tint = Color.White,
                     modifier = Modifier.size(120.dp)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -184,6 +208,72 @@ fun ActivityDetailScreen(
             )
         }
 
+        countdownText?.let { remaining ->
+            Surface(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.secondaryContainer
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.activity_wait_until,
+                            TimeUtils.formatUnlockTime(unlockAt ?: TimeUtils.now())
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = remaining,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
+        if (showPreviousIncomplete) {
+            Surface(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.errorContainer
+            ) {
+                Text(
+                    text = stringResource(id = R.string.activity_status_previous_incomplete),
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+        }
+
+        waitingUnlockAt?.let { target ->
+            if (countdownText == null) {
+                Surface(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.activity_wait_until,
+                            TimeUtils.formatUnlockTime(target)
+                        ),
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
         Row(
             modifier = Modifier
@@ -197,12 +287,32 @@ fun ActivityDetailScreen(
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        repository.markActivityCompleted(activityId)
-                        val isFinal = activity?.id == 8
-                        onCompleted(isFinal)
+                        val result = repository.tryCompleteActivity(activityId)
+                        when (result) {
+                            ActivityCompletionResult.Completed -> {
+                                showPreviousIncomplete = false
+                                waitingUnlockAt = null
+                                val isFinal = activity?.id == 8
+                                onCompleted(isFinal)
+                            }
+                            is ActivityCompletionResult.WaitingTime -> {
+                                showPreviousIncomplete = false
+                                waitingUnlockAt = result.unlockAt
+                            }
+                            ActivityCompletionResult.PreviousIncomplete -> {
+                                showPreviousIncomplete = true
+                            }
+                            ActivityCompletionResult.PhotoMissing -> {
+                                // no-op, button disabled otherwise
+                            }
+                            ActivityCompletionResult.NotFound -> {
+                                showPreviousIncomplete = false
+                                waitingUnlockAt = null
+                            }
+                        }
                     }
                 },
-                enabled = photoUris.isNotEmpty()
+                enabled = activity?.photoCompleted == true
             ) {
                 Text(text = stringResource(id = R.string.continue_button))
             }
@@ -246,6 +356,7 @@ fun ActivityDetailScreen(
                     pendingPhoto = null
                     showCamera = false
                     imageCapture = null
+                    showPreviousIncomplete = false
                 }
             },
             onRetake = { uri ->
