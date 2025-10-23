@@ -35,7 +35,7 @@ fun ActivityCard(
     onSkipWait: (() -> Unit)? = null
 ) {
     val activity = state.activity
-    val icon = ActivityIcons.forId(activity.id)
+    val iconPainter = ActivityIcons.painterForId(activity.id)
     val backgroundColor = when (state.status) {
         ActivityTimelineStatus.COMPLETED -> MaterialTheme.colorScheme.tertiaryContainer
         ActivityTimelineStatus.AVAILABLE -> MaterialTheme.colorScheme.primaryContainer
@@ -100,7 +100,7 @@ fun ActivityCard(
                 color = Color.White.copy(alpha = 0.35f)
             ) {
                 Icon(
-                    imageVector = icon,
+                    painter = iconPainter,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier

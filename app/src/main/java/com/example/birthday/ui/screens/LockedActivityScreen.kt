@@ -45,7 +45,7 @@ fun LockedActivityScreen(
         return
     }
 
-    val icon = ActivityIcons.forId(state.activity.id)
+    val iconPainter = ActivityIcons.painterForId(state.activity.id)
     val reasonText = when (val reason = state.lockReason) {
         is ActivityLockReason.WaitingTime -> stringResource(
             id = R.string.locked_activity_waiting_time,
@@ -79,7 +79,7 @@ fun LockedActivityScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Icon(
-                    imageVector = icon,
+                    painter = iconPainter,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier

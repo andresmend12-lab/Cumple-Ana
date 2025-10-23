@@ -154,7 +154,7 @@ fun ActivityDetailScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    imageVector = ActivityIcons.forId(activity?.id ?: 0),
+                    painter = ActivityIcons.painterForId(activity?.id ?: 0),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(120.dp)
