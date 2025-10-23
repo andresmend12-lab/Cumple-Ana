@@ -44,7 +44,6 @@ fun TimelineScreen(
 
     val hasPhotos = photos.isNotEmpty()
     val allCompleted = timelineStates.isNotEmpty() && timelineStates.all { it.activity.isCompleted }
-    val showAlbumButton = hasPhotos || finalVideo != null
     val showVideoButton = hasPhotos && (allCompleted || finalVideo != null)
 
     Box(
@@ -84,27 +83,23 @@ fun TimelineScreen(
                     fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
                 )
-                if (showAlbumButton || showVideoButton) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = onOpenAlbum,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        if (showAlbumButton) {
-                            Button(
-                                onClick = onOpenAlbum,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(text = stringResource(id = R.string.view_album))
-                            }
-                        }
-                        if (showVideoButton) {
-                            Button(
-                                onClick = onCreateVideo,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(text = stringResource(id = R.string.generate_video))
-                            }
+                        Text(text = stringResource(id = R.string.view_album))
+                    }
+                    if (showVideoButton) {
+                        Button(
+                            onClick = onCreateVideo,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = stringResource(id = R.string.generate_video))
                         }
                     }
                 }
