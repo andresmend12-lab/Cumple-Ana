@@ -11,16 +11,23 @@ import java.time.ZonedDateTime
 object TimeGate {
     val zone: ZoneId = ZoneId.of("Europe/Madrid")
 
-    var targetDate: LocalDateTime = LocalDateTime.of(2025, 12, 3, 0, 0)
+    private const val targetMonth = 12
+    private const val targetDay = 3
+
+    var targetDate: LocalDateTime = initialTargetDate()
+
+    private fun initialTargetDate(now: ZonedDateTime = ZonedDateTime.now(zone)): LocalDateTime {
+        return LocalDateTime.of(now.year, targetMonth, targetDay, 0, 0)
+    }
 
     fun isUnlocked(now: ZonedDateTime = ZonedDateTime.now(zone)): Boolean {
-        return !now.isBefore(targetDate.atZone(zone))
+        return !now.isBefore(resolveTarget(now))
     }
 
     fun countdownFlow(): Flow<Duration> = flow {
         while (true) {
             val now = ZonedDateTime.now(zone)
-            val target = targetDate.atZone(zone)
+            val target = resolveTarget(now)
             val duration = if (now.isBefore(target)) {
                 Duration.between(now, target)
             } else {
@@ -32,5 +39,21 @@ object TimeGate {
             }
             delay(1000)
         }
+    }
+
+    private fun resolveTarget(now: ZonedDateTime): ZonedDateTime {
+        val configured = targetDate
+        if (
+            now.year > configured.year &&
+            configured.monthValue == targetMonth &&
+            configured.dayOfMonth == targetDay &&
+            configured.hour == 0 &&
+            configured.minute == 0 &&
+            configured.second == 0 &&
+            configured.nano == 0
+        ) {
+            targetDate = configured.plusYears((now.year - configured.year).toLong())
+        }
+        return targetDate.atZone(zone)
     }
 }
