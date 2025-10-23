@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,6 +52,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
+import androidx.compose.ui.layout.ContentScale
 import com.example.birthday.R
 import com.example.birthday.camera.PhotoCapture
 import com.example.birthday.data.model.ActivityCompletionResult
@@ -84,6 +87,7 @@ fun ActivityDetailScreen(
     var waitingUnlockAt by remember { mutableStateOf<ZonedDateTime?>(null) }
     var showPreviousIncomplete by remember { mutableStateOf(false) }
     var countdownText by remember { mutableStateOf<String?>(null) }
+    var latestSavedPhoto by remember { mutableStateOf<Uri?>(null) }
 
     val photoCapture = remember { PhotoCapture(context) }
     val hasCameraPermission = remember {
@@ -101,6 +105,10 @@ fun ActivityDetailScreen(
 
     val photoUris = photos.mapNotNull { runCatching { Uri.parse(it.uri) }.getOrNull() }
     val unlockAt = activity?.unlockAtEpochMillis?.let { Instant.ofEpochMilli(it).atZone(TimeUtils.zoneId) }
+
+    LaunchedEffect(photoUris) {
+        latestSavedPhoto = photoUris.lastOrNull()
+    }
 
     LaunchedEffect(unlockAt, activity?.photoCompleted) {
         countdownText = null
@@ -190,6 +198,31 @@ fun ActivityDetailScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+        latestSavedPhoto?.let { latest ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.latest_photo_preview),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(shape = RoundedCornerShape(28.dp)) {
+                    Image(
+                        painter = rememberAsyncImagePainter(latest),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 220.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
         if (photoUris.isEmpty()) {
             Text(
                 text = stringResource(id = R.string.no_photos_yet),
@@ -356,6 +389,7 @@ fun ActivityDetailScreen(
                     showCamera = false
                     imageCapture = null
                     showPreviousIncomplete = false
+                    latestSavedPhoto = uri
                 }
             },
             onRetake = { uri ->

@@ -30,6 +30,7 @@
     <string name="open">Abrir</string>
     <string name="no_photos_yet">Aún no hay fotos guardadas para esta actividad.</string>
     <string name="add_more_photos">Añade recuerdos inolvidables con nuevas fotos.</string>
+    <string name="latest_photo_preview">Tu última selfie</string>
     <string name="back">Volver</string>
     <string name="camera_error">Error de cámara</string>
 </resources>

@@ -30,7 +30,12 @@ class PhotoCapture(private val context: Context) {
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .build()
         cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture)
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            CameraSelector.DEFAULT_FRONT_CAMERA,
+            preview,
+            imageCapture
+        )
         return imageCapture
     }
 
