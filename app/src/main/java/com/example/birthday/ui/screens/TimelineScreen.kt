@@ -87,14 +87,14 @@ fun TimelineScreen(
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(timelineStates, key = { it.activity.id }) { state ->
-                        val skipHandler = if (
+                        val skipHandler: (() -> Unit)? = if (
                             state.status == ActivityTimelineStatus.BLOCKED_TIME &&
                             state.previousCompleted
                         ) {
                             {
                                 coroutineScope.launch {
                                     repository.skipWaitForActivity(state.activity.id)
-                                }
+                                }.let { }
                             }
                         } else {
                             null

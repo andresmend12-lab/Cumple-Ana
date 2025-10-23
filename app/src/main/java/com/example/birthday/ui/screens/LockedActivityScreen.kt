@@ -55,7 +55,15 @@ fun LockedActivityScreen(
         ActivityLockReason.PreviousIncomplete -> stringResource(id = R.string.activity_status_previous_incomplete)
         null -> stringResource(id = R.string.locked_activity_generic)
     }
-    val countdown = state.timeRemaining?.let { TimeUtils.formatDuration(it) }
+    val countdown = if (
+        state.lockReason is ActivityLockReason.WaitingTime &&
+        state.previousCompleted &&
+        state.timeRemaining != null
+    ) {
+        TimeUtils.formatDuration(state.timeRemaining)
+    } else {
+        null
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Surface(
