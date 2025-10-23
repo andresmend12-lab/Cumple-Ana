@@ -18,6 +18,7 @@ import com.example.birthday.ui.screens.MemoriesScreen
 import com.example.birthday.ui.screens.TimelineScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.time.LocalDateTime
 
 object Routes {
     const val Locked = "locked"
@@ -38,21 +39,26 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
         composable(Routes.Locked) {
             val remainingFlow: StateFlow<Long> = rememberCountdownState()
             val remaining by remainingFlow.collectAsState()
+            val navigateToTimeline: () -> Unit = {
+                navController.navigate(Routes.Timeline) {
+                    popUpTo(Routes.Locked) { inclusive = true }
+                }
+            }
             LockedScreen(
                 remainingSeconds = remaining,
                 onCheckAgain = {
                     if (TimeGate.isUnlocked()) {
-                        navController.navigate(Routes.Timeline) {
-                            popUpTo(Routes.Locked) { inclusive = true }
-                        }
+                        navigateToTimeline()
                     }
+                },
+                onSkip = {
+                    TimeGate.targetDate = LocalDateTime.now(TimeGate.zone).minusSeconds(1)
+                    navigateToTimeline()
                 }
             )
             LaunchedEffect(remaining) {
                 if (remaining <= 0 && TimeGate.isUnlocked()) {
-                    navController.navigate(Routes.Timeline) {
-                        popUpTo(Routes.Locked) { inclusive = true }
-                    }
+                    navigateToTimeline()
                 }
             }
         }
