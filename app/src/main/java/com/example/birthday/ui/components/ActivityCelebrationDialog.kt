@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -32,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,9 +84,9 @@ fun ActivityCelebrationDialog(
                 )
         ) {
             if (state.isFinal) {
-                FireworksAnimation(modifier = Modifier.matchParentSize())
+                FireworksAnimation(modifier = Modifier.fillMaxSize())
             } else {
-                ConfettiAnimation(modifier = Modifier.matchParentSize())
+                ConfettiAnimation(modifier = Modifier.fillMaxSize())
             }
 
             Surface(
@@ -232,7 +233,8 @@ private fun ConfettiAnimation(modifier: Modifier = Modifier) {
         pieces.forEach { piece ->
             val playhead = (progress + piece.offset) % 1f
             val y = height * playhead
-            val drift = sin((playhead * 2f * PI.toFloat()) + piece.wobble) * 40f
+            val angle = (playhead * 2f * PI.toFloat()) + piece.wobble
+            val drift = sin(angle.toDouble()).toFloat() * 40f
             val x = (width * piece.xFactor + drift).coerceIn(0f, width)
             val alpha = 1f - playhead
 
@@ -299,10 +301,13 @@ private fun FireworksAnimation(modifier: Modifier = Modifier) {
 
             val sparks = 12
             repeat(sparks) { index ->
-                val angle = (2 * PI * index / sparks).toFloat()
+                val angleFraction = index.toFloat() / sparks.toFloat()
+                val angle = 2f * PI.toFloat() * angleFraction
+                val cosAngle = cos(angle.toDouble()).toFloat()
+                val sinAngle = sin(angle.toDouble()).toFloat()
                 val end = Offset(
-                    x = center.x + cos(angle) * radius,
-                    y = center.y + sin(angle) * radius
+                    x = center.x + cosAngle * radius,
+                    y = center.y + sinAngle * radius
                 )
                 val stroke = 6f * alpha
                 drawLine(
