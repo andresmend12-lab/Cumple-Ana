@@ -69,7 +69,7 @@ fun ActivityDetailScreen(
     activityId: Int,
     repository: CumpleRepository,
     onBack: () -> Unit,
-    onCompleted: (Boolean) -> Unit
+    onCompleted: () -> Unit
 ) {
     val activity by repository.observeActivity(activityId).collectAsState(initial = null)
     val photos by repository.observePhotos(activityId).collectAsState(initial = emptyList())
@@ -292,8 +292,7 @@ fun ActivityDetailScreen(
                             ActivityCompletionResult.Completed -> {
                                 showPreviousIncomplete = false
                                 waitingUnlockAt = null
-                                val isFinal = activity?.id == 8
-                                onCompleted(isFinal)
+                                onCompleted()
                             }
                             is ActivityCompletionResult.WaitingTime -> {
                                 showPreviousIncomplete = false

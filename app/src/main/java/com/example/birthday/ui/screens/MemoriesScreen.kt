@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,10 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import coil.compose.rememberAsyncImagePainter
 import com.example.birthday.R
 import com.example.birthday.data.repo.CumpleRepository
@@ -49,7 +44,6 @@ fun MemoriesScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val finalVideo by repository.observeFinalVideo().collectAsState(initial = null)
     val photos by repository.observeAllPhotos().collectAsState(initial = emptyList())
     val activities by repository.observeActivities().collectAsState(initial = emptyList())
     var selectedPhoto by remember { mutableStateOf<Uri?>(null) }
@@ -60,48 +54,12 @@ fun MemoriesScreen(
             .background(Brush.verticalGradient(listOf(Color(0xFFFFF9F2), Color(0xFFFFD166).copy(alpha = 0.2f))))
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(onClick = onBack) {
-                Text(text = stringResource(id = R.string.back))
-            }
-            if (finalVideo != null) {
-                Button(onClick = { shareUri(context, Uri.parse(finalVideo!!.uri), "video/mp4") }) {
-                    Text(text = stringResource(id = R.string.share))
-                }
-            }
+        Button(onClick = onBack) {
+            Text(text = stringResource(id = R.string.back))
         }
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = stringResource(id = R.string.memories_title), style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
-
-        finalVideo?.let { video ->
-            val player = remember(video.uri) {
-                ExoPlayer.Builder(context).build().apply {
-                    setMediaItem(MediaItem.fromUri(Uri.parse(video.uri)))
-                    prepare()
-                    playWhenReady = false
-                }
-            }
-            DisposableEffect(player) {
-                onDispose { player.release() }
-            }
-            Surface(shape = RoundedCornerShape(24.dp), tonalElevation = 4.dp) {
-                AndroidView(
-                    factory = {
-                        PlayerView(context).apply {
-                            this.player = player
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp)
-                )
-            }
-        }
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(text = stringResource(id = R.string.photos_section_title), style = MaterialTheme.typography.titleLarge)

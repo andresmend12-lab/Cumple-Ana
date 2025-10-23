@@ -1,9 +1,7 @@
 package com.example.birthday.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,17 +32,10 @@ import kotlinx.coroutines.launch
 fun TimelineScreen(
     repository: CumpleRepository,
     onOpenActivity: (Int) -> Unit,
-    onOpenAlbum: () -> Unit,
-    onCreateVideo: () -> Unit
+    onOpenAlbum: () -> Unit
 ) {
     val timelineStates by repository.observeTimelineState().collectAsState(initial = emptyList())
-    val finalVideo by repository.observeFinalVideo().collectAsState(initial = null)
-    val photos by repository.observeAllPhotos().collectAsState(initial = emptyList())
     val coroutineScope = rememberCoroutineScope()
-
-    val hasPhotos = photos.isNotEmpty()
-    val allCompleted = timelineStates.isNotEmpty() && timelineStates.all { it.activity.isCompleted }
-    val showVideoButton = hasPhotos && (allCompleted || finalVideo != null)
 
     Box(
         modifier = Modifier
@@ -83,25 +74,13 @@ fun TimelineScreen(
                     fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
                 )
-                Row(
+                Button(
+                    onClick = onOpenAlbum,
                     modifier = Modifier
-                        .padding(horizontal = 24.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                        .align(Alignment.CenterHorizontally)
                 ) {
-                    Button(
-                        onClick = onOpenAlbum,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(text = stringResource(id = R.string.view_album))
-                    }
-                    if (showVideoButton) {
-                        Button(
-                            onClick = onCreateVideo,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(text = stringResource(id = R.string.generate_video))
-                        }
-                    }
+                    Text(text = stringResource(id = R.string.view_album))
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(timelineStates, key = { it.activity.id }) { state ->

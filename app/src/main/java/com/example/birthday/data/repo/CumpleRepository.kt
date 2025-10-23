@@ -2,14 +2,12 @@ package com.example.birthday.data.repo
 
 import com.example.birthday.data.db.ActivityDao
 import com.example.birthday.data.db.PhotoDao
-import com.example.birthday.data.db.VideoDao
 import com.example.birthday.data.model.ActivityCompletionResult
 import com.example.birthday.data.model.ActivityEntity
 import com.example.birthday.data.model.ActivityLockReason
 import com.example.birthday.data.model.ActivityTimelineState
 import com.example.birthday.data.model.ActivityTimelineStatus
 import com.example.birthday.data.model.PhotoEntity
-import com.example.birthday.data.model.VideoEntity
 import com.example.birthday.util.TimeUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +22,7 @@ import java.time.ZonedDateTime
 
 class CumpleRepository(
     private val activityDao: ActivityDao,
-    private val photoDao: PhotoDao,
-    private val videoDao: VideoDao
+    private val photoDao: PhotoDao
 ) {
     fun observeActivities(): Flow<List<ActivityEntity>> = activityDao.observeActivities()
 
@@ -34,8 +31,6 @@ class CumpleRepository(
     fun observePhotos(activityId: Int): Flow<List<PhotoEntity>> = photoDao.observePhotos(activityId)
 
     fun observeAllPhotos(): Flow<List<PhotoEntity>> = photoDao.observeAllPhotos()
-
-    fun observeFinalVideo(): Flow<VideoEntity?> = videoDao.observeFinalVideo()
 
     fun observeTimelineState(zoneId: ZoneId = TimeUtils.zoneId): Flow<List<ActivityTimelineState>> {
         return combine(activityDao.observeActivities(), tickerFlow()) { activities, _ ->
@@ -111,16 +106,6 @@ class CumpleRepository(
 
     suspend fun getFirstIncompleteActivityId(): Int? {
         return activityDao.getNextPending()?.id
-    }
-
-    suspend fun storeFinalVideo(uri: String, createdAt: Long) {
-        videoDao.insert(
-            VideoEntity(
-                uri = uri,
-                createdAt = createdAt,
-                isFinal = true
-            )
-        )
     }
 
     suspend fun hasPhotoForActivity(activityId: Int): Boolean {

@@ -4,11 +4,6 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-val ffmpegKitEnabled = providers.gradleProperty("enableFfmpegKit")
-    .map(String::toBoolean)
-    .orElse(false)
-val ffmpegKitEnabledValue = ffmpegKitEnabled.get()
-
 android {
     namespace = "com.example.birthday"
     compileSdk = 34
@@ -24,7 +19,6 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("boolean", "FFMPEG_ENABLED", ffmpegKitEnabledValue.toString())
     }
 
     buildTypes {
@@ -49,16 +43,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-
-    sourceSets {
-        getByName("main") {
-            // Always include the stub implementation so the app can fall back gracefully
-            java.srcDir("src/noFfmpeg/java")
-            if (ffmpegKitEnabledValue) {
-                java.srcDir("src/withFfmpeg/java")
-            }
-        }
     }
 
     packaging {
@@ -103,14 +87,6 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.4.1")
     implementation("androidx.camera:camera-lifecycle:1.4.1")
     implementation("androidx.camera:camera-view:1.4.1")
-
-    // Media3
-    implementation("androidx.media3:media3-exoplayer:1.4.1")
-    implementation("androidx.media3:media3-ui:1.4.1")
-
-    if (ffmpegKitEnabledValue) {
-        implementation("com.arthenica:ffmpeg-kit-full:6.0-2.LTS")
-    }
 
     implementation("com.google.android.material:material:1.12.0")
 

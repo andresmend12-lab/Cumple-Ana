@@ -15,8 +15,7 @@ class CumpleAnaApp : Application() {
         val database = AppDatabase.getInstance(this)
         repository = CumpleRepository(
             activityDao = database.activityDao(),
-            photoDao = database.photoDao(),
-            videoDao = database.videoDao()
+            photoDao = database.photoDao()
         )
         NotificationHelper.ensureChannel(this)
         ActivityUnlockScheduler.scheduleAll(this)
