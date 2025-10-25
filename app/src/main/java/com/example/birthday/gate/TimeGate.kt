@@ -11,13 +11,14 @@ import java.time.ZonedDateTime
 object TimeGate {
     val zone: ZoneId = ZoneId.of("Europe/Madrid")
 
+    private const val targetYear = 2025
     private const val targetMonth = 12
     private const val targetDay = 3
 
     var targetDate: LocalDateTime = initialTargetDate()
 
-    private fun initialTargetDate(now: ZonedDateTime = ZonedDateTime.now(zone)): LocalDateTime {
-        return LocalDateTime.of(now.year, targetMonth, targetDay, 0, 0)
+    private fun initialTargetDate(): LocalDateTime {
+        return LocalDateTime.of(targetYear, targetMonth, targetDay, 0, 0)
     }
 
     fun isUnlocked(now: ZonedDateTime = ZonedDateTime.now(zone)): Boolean {
