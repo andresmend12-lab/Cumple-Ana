@@ -62,7 +62,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.birthday.R
 import com.example.birthday.data.model.ActivityEntity
 import com.example.birthday.data.repo.CumpleRepository
-import com.example.birthday.ui.components.ActivityIcons
+import com.example.birthday.ui.components.activityIconPainter
 
 @Composable
 fun MemoriesScreen(
@@ -329,8 +329,8 @@ private fun MemoriesFilterRow(
                 },
                 leadingIcon = {
                     Icon(
-                        painter = ActivityIcons.painterForId(activity.id),
-                        contentDescription = null,
+                        painter = activityIconPainter(activity.title),
+                        contentDescription = "Icono de ${activity.title}",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
@@ -373,8 +373,8 @@ private fun MemoryActivityCard(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                     ) {
                         Icon(
-                            painter = ActivityIcons.painterForId(activity.id),
-                            contentDescription = null,
+                            painter = activityIconPainter(activity.title),
+                            contentDescription = "Icono de ${activity.title}",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(14.dp)
                         )
@@ -431,8 +431,8 @@ private fun EmptyMemoriesState() {
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
         ) {
             Icon(
-                painter = ActivityIcons.painterForId(1),
-                contentDescription = null,
+                painter = activityIconPainter("Coronación"),
+                contentDescription = "Icono de Coronación",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(28.dp)
             )

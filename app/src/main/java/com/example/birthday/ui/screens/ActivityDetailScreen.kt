@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,12 +42,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.viewinterop.AndroidView
@@ -61,7 +59,7 @@ import com.example.birthday.data.model.ActivityCompletionResult
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityCelebrationDialog
 import com.example.birthday.ui.components.ActivityCelebrationState
-import com.example.birthday.ui.components.ActivityIcons
+import com.example.birthday.ui.components.ActivityHeader
 import com.example.birthday.ui.components.PhotoGrid
 import com.example.birthday.util.DateUtils
 import com.example.birthday.util.TimeUtils
@@ -145,40 +143,31 @@ fun ActivityDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Brush.verticalGradient(listOf(Color(0xFFFF8E72), Color(0xFFFFD166))))
-                .padding(bottom = 32.dp)
-        ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            ActivityHeader(title = activity?.title.orEmpty())
             IconButton(onClick = onBack, modifier = Modifier.padding(16.dp)) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = stringResource(id = R.string.back))
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 72.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    painter = ActivityIcons.painterForId(activity?.id ?: 0),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(120.dp)
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = activity?.title.orEmpty(),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = activity?.description.orEmpty(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = activity?.title.orEmpty(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = activity?.description.orEmpty(),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))

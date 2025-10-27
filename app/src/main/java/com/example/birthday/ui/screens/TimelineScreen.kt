@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.birthday.R
 import com.example.birthday.data.repo.CumpleRepository
-import com.example.birthday.ui.components.ActivityCard
+import com.example.birthday.ui.components.ActivityListItem
 import kotlinx.coroutines.launch
 
 @Composable
@@ -82,13 +82,9 @@ fun TimelineScreen(
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(timelineStates, key = { it.activity.id }) { state ->
-                        ActivityCard(
+                        ActivityListItem(
                             state = state,
-                            onClick = {
-                                if (state.isAvailable) {
-                                    onOpenActivity(state.activity.id)
-                                }
-                            },
+                            onClick = { onOpenActivity(state.activity.id) },
                             onSkipTimer = {
                                 scope.launch {
                                     repository.skipWaitForActivity(state.activity.id)

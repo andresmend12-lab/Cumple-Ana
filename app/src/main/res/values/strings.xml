@@ -17,7 +17,7 @@
     <string name="step_progress">Paso %1$d de %2$d</string>
     <string name="activity_status_completed">Hecha ✓</string>
     <string name="activity_status_ready">Listo</string>
-    <string name="activity_status_pending_photo">Añade una foto para continuar</string>
+    <string name="activity_status_pending_photo">Pendiente de foto</string>
     <string name="activity_status_locked_time_with_hour">Disponible a las %1$s</string>
     <string name="activity_status_previous_incomplete">Completa la actividad anterior para continuar</string>
     <string name="locked_activity_waiting_time">Disponible a las %1$s</string>
