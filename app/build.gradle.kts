@@ -64,7 +64,7 @@ android {
     @Suppress("UnstableApiUsage")
     applicationVariants.all {
         val buildTypeName = buildType.name
-        val appDisplayName = "Cumple de Ana"
+        val appDisplayName = "Cumple de Mi Amorcito"
         val suffix = if (buildTypeName == "release") "" else "-$buildTypeName"
 
         outputs.all {
