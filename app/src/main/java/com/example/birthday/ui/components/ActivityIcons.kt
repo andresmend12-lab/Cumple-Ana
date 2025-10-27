@@ -25,7 +25,7 @@ object ActivityIcons {
         5 -> rememberVectorPainter(Icons.Rounded.Cake)
         6 -> rememberVectorPainter(Icons.Rounded.Spa)
         7 -> rememberVectorPainter(Icons.Rounded.Diamond)
-        8 -> painterResource(id = R.drawable.ic_sushi)
+        8 -> painterResource(id = R.drawable.ic_chopsticks)
         else -> rememberVectorPainter(Icons.Rounded.Celebration)
     }
 }
