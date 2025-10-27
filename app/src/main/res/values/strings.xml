@@ -5,6 +5,7 @@
     <string name="take_photo">Hacer foto</string>
     <string name="retake_photo">Rehacer</string>
     <string name="save_photo">Guardar</string>
+    <string name="switch_camera">Cambiar cámara</string>
     <string name="continue_button">Continuar</string>
     <string name="view_album">Ver álbum</string>
     <string name="share">Compartir</string>

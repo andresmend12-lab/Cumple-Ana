@@ -22,17 +22,24 @@ import kotlin.coroutines.resumeWithException
 class PhotoCapture(private val context: Context) {
     private val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> = ProcessCameraProvider.getInstance(context)
 
-    suspend fun bind(previewView: PreviewView, lifecycleOwner: LifecycleOwner): ImageCapture {
+    suspend fun bind(
+        previewView: PreviewView,
+        lifecycleOwner: LifecycleOwner,
+        lensFacing: Int
+    ): ImageCapture {
         val cameraProvider = cameraProviderFuture.await(context)
         val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
         val imageCapture = ImageCapture.Builder()
             .setTargetRotation(previewView.display.rotation)
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .build()
+        val selector = CameraSelector.Builder()
+            .requireLensFacing(lensFacing)
+            .build()
         cameraProvider.unbindAll()
         cameraProvider.bindToLifecycle(
             lifecycleOwner,
-            CameraSelector.DEFAULT_FRONT_CAMERA,
+            selector,
             preview,
             imageCapture
         )

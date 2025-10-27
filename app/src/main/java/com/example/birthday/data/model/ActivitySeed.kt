@@ -26,56 +26,56 @@ object ActivitySeeds {
             id = 1,
             order = 1,
             title = "Coronación",
-            description = "El día empieza como debe: con una reina.\nPonte la corona, sopla las velas y que empiece el reinado del caos bonito. 👑🎂",
+            description = "El día comienza como debe: como una reina.\nPonte la corona, sopla las velas y que empiece el reinado del caos.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 0, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 2,
             order = 2,
             title = "Desayuno",
-            description = "La realeza también desayuna... pero mejor.\nHoy el bacon cruje más, el café huele a calma y todo sabe a ti. ☕💛",
+            description = "Desayuno en la cama con bacon, café y muchos besos",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 9, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 3,
             order = 3,
             title = "Cuídate",
-            description = "Entre tanto brillo, hay que parar un poco.\nEste regalo no se usa: se respira.\nTómate un momento solo tuyo. 🌿",
+            description = "Hoy no toca correr, ni pensar, ni preocuparse.\nToca cuidarse, mimarse y dejar que el estrés se vaya por donde vino.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 10, 30, 0, 0, zoneId)
         ),
         Seed(
             id = 4,
             order = 4,
             title = "Que rico el cafesito",
-            description = "A veces el café no se bebe: se comparte.\nQue este momento te sepa a risas lentas y a cosas bonitas que no se apuran. ☕✨",
+            description = "Vamos por un café de los buenos,\naunque ninguno va a saber como los de casa.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 12, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 5,
             order = 5,
-            title = "Una tarta nunca es suficiente",
-            description = "¿Una tarta? No, dos.\nPorque cuando se trata de dulzura, tú siempre te pasas de la medida. 🎂💞",
+            title = "Una nunca es suficiente",
+            description = "Ya sabes cómo va esto: un cumpleaños sin exceso de tarta no es un cumpleaños.\nRepetimos tradición.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 15, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 6,
             order = 6,
             title = "Siempre divina",
-            description = "Brillas aunque no quieras (y lo sabes).\nEste detalle no es para que huelas bien, sino para que recuerdes lo bien que te sienta ser tú. 💫",
+            description = "Siempre divina. A veces por perfume, siempre por naturaleza.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 16, 30, 0, 0, zoneId)
         ),
         Seed(
             id = 7,
             order = 7,
-            title = "El amarillo te queda bien",
-            description = "No todo lo que brilla es oro… pero esto casi.",
+            title = "El dorado te queda bien",
+            description = "Hay colores que no elige uno: el dorado te eligió a ti.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 18, 0, 0, 0, zoneId)
         ),
         Seed(
             id = 8,
             order = 8,
             title = "Acabar de la mejor forma",
-            description = "Si todo lo bueno tiene un final… que sea con sushi.",
+            description = "Si todo lo bueno tiene un final,\nque el tuyo sea con sushi.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 19, 0, 0, 0, zoneId)
         )
     )

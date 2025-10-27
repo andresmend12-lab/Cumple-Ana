@@ -4,6 +4,7 @@ import android.Manifest
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -85,6 +87,7 @@ fun ActivityDetailScreen(
     var showCamera by remember { mutableStateOf(false) }
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     var pendingPhoto by remember { mutableStateOf<Uri?>(null) }
+    var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_FRONT) }
     var cameraError by remember { mutableStateOf<String?>(null) }
     var waitingUnlockAt by remember { mutableStateOf<ZonedDateTime?>(null) }
     var showPreviousIncomplete by remember { mutableStateOf(false) }
@@ -102,6 +105,7 @@ fun ActivityDetailScreen(
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         hasCameraPermission.value = granted
         if (granted) {
+            lensFacing = CameraSelector.LENS_FACING_FRONT
             showCamera = true
         }
     }
@@ -187,6 +191,7 @@ fun ActivityDetailScreen(
         ) {
             Button(onClick = {
                 if (hasCameraPermission.value) {
+                    lensFacing = CameraSelector.LENS_FACING_FRONT
                     showCamera = true
                 } else {
                     permissionLauncher.launch(Manifest.permission.CAMERA)
@@ -398,6 +403,14 @@ fun ActivityDetailScreen(
             onRetake = { uri ->
                 photoCapture.discardPhoto(uri)
                 pendingPhoto = null
+            },
+            lensFacing = lensFacing,
+            onSwitchCamera = {
+                lensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+                    CameraSelector.LENS_FACING_BACK
+                } else {
+                    CameraSelector.LENS_FACING_FRONT
+                }
             }
         )
     }
@@ -436,7 +449,9 @@ private fun CameraCaptureDialog(
     onTakePhoto: (ImageCapture) -> Unit,
     pendingPhoto: Uri?,
     onSavePhoto: (Uri) -> Unit,
-    onRetake: (Uri) -> Unit
+    onRetake: (Uri) -> Unit,
+    lensFacing: Int,
+    onSwitchCamera: () -> Unit
 ) {
     val context = LocalContext.current
     val previewView = remember { androidx.camera.view.PreviewView(context) }
@@ -445,16 +460,31 @@ private fun CameraCaptureDialog(
         Surface(shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp) {
             Column(modifier = Modifier.padding(16.dp)) {
                 if (pendingPhoto == null) {
-                    AndroidView(
-                        factory = {
-                            previewView.apply {
-                                scaleType = androidx.camera.view.PreviewView.ScaleType.FILL_CENTER
-                            }
-                        },
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(320.dp)
-                    )
+                    ) {
+                        AndroidView(
+                            factory = {
+                                previewView.apply {
+                                    scaleType = androidx.camera.view.PreviewView.ScaleType.FILL_CENTER
+                                }
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        IconButton(
+                            onClick = onSwitchCamera,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Cameraswitch,
+                                contentDescription = stringResource(id = R.string.switch_camera)
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(
                         onClick = {
@@ -492,8 +522,8 @@ private fun CameraCaptureDialog(
         }
     }
 
-    LaunchedEffect(previewView) {
-        val capture = photoCapture.bind(previewView, lifecycleOwner)
+    LaunchedEffect(previewView, lensFacing) {
+        val capture = photoCapture.bind(previewView, lifecycleOwner, lensFacing)
         onImageCapture(capture)
     }
 }
