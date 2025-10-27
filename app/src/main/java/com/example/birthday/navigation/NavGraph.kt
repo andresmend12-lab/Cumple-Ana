@@ -12,19 +12,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.birthday.LocalRepository
 import com.example.birthday.gate.TimeGate
 import com.example.birthday.ui.screens.ActivityDetailScreen
-import com.example.birthday.ui.screens.GenerateVideoScreen
+import com.example.birthday.ui.screens.LockedActivityScreen
 import com.example.birthday.ui.screens.LockedScreen
 import com.example.birthday.ui.screens.MemoriesScreen
 import com.example.birthday.ui.screens.TimelineScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.time.LocalDateTime
 
 object Routes {
     const val Locked = "locked"
     const val Timeline = "timeline"
     const val Activity = "activity"
-    const val GenerateVideo = "generateVideo"
+    const val LockedActivity = "lockedActivity"
     const val Memories = "memories"
 }
 
@@ -52,7 +51,7 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                     }
                 },
                 onSkip = {
-                    TimeGate.targetDate = LocalDateTime.now(TimeGate.zone).minusSeconds(1)
+                    TimeGate.forceUnlock()
                     navigateToTimeline()
                 }
             )
@@ -69,7 +68,7 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                 onOpenActivity = { id ->
                     navController.navigate("${Routes.Activity}/$id")
                 },
-                onShowMemories = {
+                onOpenAlbum = {
                     navController.navigate(Routes.Memories)
                 }
             )
@@ -81,19 +80,17 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                 activityId = id,
                 repository = repository,
                 onBack = { navController.popBackStack() },
-                onCompleted = { isFinal ->
+                onCompleted = {
                     navController.popBackStack()
-                    if (isFinal) {
-                        navController.navigate(Routes.GenerateVideo)
-                    }
                 }
             )
         }
-        composable(Routes.GenerateVideo) {
+        composable("${Routes.LockedActivity}/{activityId}") { backStackEntry ->
             val repository = LocalRepository.current
-            GenerateVideoScreen(
+            val id = backStackEntry.arguments?.getString("activityId")?.toIntOrNull() ?: return@composable
+            LockedActivityScreen(
+                activityId = id,
                 repository = repository,
-                onFinished = { navController.navigate(Routes.Memories) { popUpTo(Routes.Timeline) { inclusive = false } } },
                 onBack = { navController.popBackStack() }
             )
         }
