@@ -110,7 +110,7 @@ fun ActivityCard(
                 Icon(
                     painter = iconPainter,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.Unspecified,
                     modifier = Modifier
                         .size(56.dp)
                         .padding(14.dp)
