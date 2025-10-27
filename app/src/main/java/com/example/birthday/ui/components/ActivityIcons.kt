@@ -8,14 +8,14 @@ import com.example.birthday.R
 object ActivityIcons {
     @Composable
     fun painterForId(id: Int): Painter = when (id) {
-        1 -> painterResource(id = R.drawable.activity_corona)
-        2 -> painterResource(id = R.drawable.activity_breakfast)
-        3 -> painterResource(id = R.drawable.activity_relax)
-        4 -> painterResource(id = R.drawable.activity_coffee)
-        5 -> painterResource(id = R.drawable.activity_gift)
-        6 -> painterResource(id = R.drawable.activity_perfume)
-        7 -> painterResource(id = R.drawable.activity_necklace)
-        8 -> painterResource(id = R.drawable.activity_sushi)
-        else -> painterResource(id = R.drawable.activity_gift)
+        1 -> painterResource(id = R.mipmap.ic_corona_foreground)
+        2 -> painterResource(id = R.mipmap.ic_desayuno_foreground)
+        3 -> painterResource(id = R.mipmap.ic_relax_foreground)
+        4 -> painterResource(id = R.mipmap.ic_cafe_foreground)
+        5 -> painterResource(id = R.mipmap.ic_regalo)
+        6 -> painterResource(id = R.mipmap.ic_perfume_foreground)
+        7 -> painterResource(id = R.mipmap.ic_collar_foreground)
+        8 -> painterResource(id = R.mipmap.ic_sushi_foreground)
+        else -> painterResource(id = R.mipmap.ic_regalo)
     }
 }
