@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.birthday.R
 import com.example.birthday.data.model.ActivityLockReason
 import com.example.birthday.data.repo.CumpleRepository
-import com.example.birthday.ui.components.activityIconPainter
+import com.example.birthday.ui.components.ActivityIcons
 import com.example.birthday.util.TimeUtils
 import kotlinx.coroutines.launch
 
@@ -47,7 +47,7 @@ fun LockedActivityScreen(
         return
     }
 
-    val iconPainter = activityIconPainter(state.activity.title)
+    val iconPainter = ActivityIcons.painterForId(state.activity.id)
     val reasonText = when (val reason = state.lockReason) {
         is ActivityLockReason.WaitingTime -> stringResource(
             id = R.string.locked_activity_waiting_time,
@@ -82,7 +82,7 @@ fun LockedActivityScreen(
             ) {
                 Icon(
                     painter = iconPainter,
-                    contentDescription = "Icono de ${state.activity.title}",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
