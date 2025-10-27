@@ -3,6 +3,7 @@ package com.example.birthday.ui.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -65,7 +66,7 @@ fun TimelineScreen(
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
-            Column {
+            Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "¡Feliz cumple, Ana!",
                     fontSize = 28.sp,
@@ -80,7 +81,11 @@ fun TimelineScreen(
                 ) {
                     Text(text = stringResource(id = R.string.view_album))
                 }
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
                     items(timelineStates, key = { it.activity.id }) { state ->
                         ActivityCard(
                             state = state,
