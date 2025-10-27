@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,6 +27,7 @@ import com.example.birthday.data.model.ActivityLockReason
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityIcons
 import com.example.birthday.util.TimeUtils
+import kotlinx.coroutines.launch
 
 @Composable
 fun LockedActivityScreen(
@@ -55,10 +57,10 @@ fun LockedActivityScreen(
         ActivityLockReason.PreviousIncomplete -> stringResource(id = R.string.activity_status_previous_incomplete)
         null -> stringResource(id = R.string.locked_activity_generic)
     }
+    val scope = rememberCoroutineScope()
+    val canSkip = state.lockReason is ActivityLockReason.WaitingTime && state.previousCompleted
     val countdown = if (
-        state.lockReason is ActivityLockReason.WaitingTime &&
-        state.previousCompleted &&
-        state.timeRemaining != null
+        canSkip && state.timeRemaining != null
     ) {
         TimeUtils.formatDuration(state.timeRemaining)
     } else {
@@ -106,6 +108,18 @@ fun LockedActivityScreen(
                 }
                 Button(onClick = onBack) {
                     Text(text = stringResource(id = R.string.back))
+                }
+                if (canSkip) {
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                repository.skipWaitForActivity(activityId)
+                                onBack()
+                            }
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.skip_wait))
+                    }
                 }
             }
         }

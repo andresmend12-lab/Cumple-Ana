@@ -80,7 +80,7 @@ class CumpleRepository(
             return ActivityCompletionResult.PreviousIncomplete
         }
         val unlockAt = Instant.ofEpochMilli(activity.unlockAtEpochMillis).atZone(TimeUtils.zoneId)
-        if (now.isBefore(unlockAt)) {
+        if (!activity.isUnlocked && now.isBefore(unlockAt)) {
             val remaining = Duration.between(now, unlockAt)
             return ActivityCompletionResult.WaitingTime(unlockAt, remaining)
         }
@@ -98,6 +98,17 @@ class CumpleRepository(
         }
 
         return ActivityCompletionResult.Completed(isFinal = nextActivity == null)
+    }
+
+    suspend fun skipWaitForActivity(activityId: Int) {
+        val activities = activityDao.getActivities().sortedBy { it.order }
+        val activity = activities.firstOrNull { it.id == activityId } ?: return
+        val previousCompleted = activities.filter { it.order < activity.order }.all { it.isCompleted }
+        if (!previousCompleted || activity.isUnlocked) {
+            return
+        }
+        val updated = activity.copy(isUnlocked = true)
+        activityDao.update(updated)
     }
 
     suspend fun isActivityCompleted(activityId: Int): Boolean {
@@ -121,7 +132,7 @@ class CumpleRepository(
         var previousCompleted = true
         return sorted.map { activity ->
             val unlockAt = Instant.ofEpochMilli(activity.unlockAtEpochMillis).atZone(zoneId)
-            val isTimeReached = !now.isBefore(unlockAt)
+            val isTimeReached = activity.isUnlocked || !now.isBefore(unlockAt)
             val hasPhoto = activity.photoCompleted
             val prevCompletedForThis = previousCompleted
             val status: ActivityTimelineStatus

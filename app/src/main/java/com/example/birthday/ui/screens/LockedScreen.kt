@@ -24,7 +24,8 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun LockedScreen(
     remainingSeconds: Long,
-    onCheckAgain: () -> Unit
+    onCheckAgain: () -> Unit,
+    onSkip: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ConfettiCanvas(
@@ -60,6 +61,9 @@ fun LockedScreen(
                 )
                 Button(onClick = onCheckAgain, modifier = Modifier.padding(top = 24.dp)) {
                     Text(text = stringResource(id = R.string.check_again))
+                }
+                Button(onClick = onSkip, modifier = Modifier.padding(top = 12.dp)) {
+                    Text(text = stringResource(id = R.string.skip_wait))
                 }
             }
         }

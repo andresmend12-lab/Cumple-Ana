@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.birthday.R
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityCard
+import kotlinx.coroutines.launch
 
 @Composable
 fun TimelineScreen(
@@ -32,6 +34,7 @@ fun TimelineScreen(
     onOpenAlbum: () -> Unit
 ) {
     val timelineStates by repository.observeTimelineState().collectAsState(initial = emptyList())
+    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -84,6 +87,11 @@ fun TimelineScreen(
                             onClick = {
                                 if (state.isAvailable) {
                                     onOpenActivity(state.activity.id)
+                                }
+                            },
+                            onSkipTimer = {
+                                scope.launch {
+                                    repository.skipWaitForActivity(state.activity.id)
                                 }
                             }
                         )

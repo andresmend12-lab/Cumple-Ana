@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,7 +32,8 @@ import androidx.compose.ui.res.stringResource
 fun ActivityCard(
     state: ActivityTimelineState,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSkipTimer: (() -> Unit)? = null
 ) {
     val activity = state.activity
     val iconPainter = ActivityIcons.painterForId(activity.id)
@@ -76,12 +78,19 @@ fun ActivityCard(
         }
     }
 
+    val showSkipButton = onSkipTimer != null &&
+        state.status == ActivityTimelineStatus.BLOCKED_TIME &&
+        state.previousCompleted
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        onClick = onClick,
-        enabled = state.isAvailable,
+        onClick = {
+            if (state.isAvailable) {
+                onClick()
+            }
+        },
         shape = RoundedCornerShape(28.dp),
         color = backgroundColor,
         tonalElevation = 4.dp
@@ -142,6 +151,14 @@ fun ActivityCard(
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, fontWeight = FontWeight.Medium),
                         color = foregroundColor
                     )
+                }
+                if (showSkipButton) {
+                    Button(
+                        onClick = { onSkipTimer?.invoke() },
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text(text = stringResource(id = R.string.skip_wait))
+                    }
                 }
             }
         }

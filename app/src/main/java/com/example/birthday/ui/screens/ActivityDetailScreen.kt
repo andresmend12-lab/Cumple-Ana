@@ -117,10 +117,10 @@ fun ActivityDetailScreen(
         latestSavedPhoto = photoUris.lastOrNull()
     }
 
-    LaunchedEffect(unlockAt, activity?.photoCompleted) {
+    LaunchedEffect(unlockAt, activity?.photoCompleted, activity?.isUnlocked) {
         countdownText = null
         val target = unlockAt
-        if (activity?.photoCompleted == true && target != null) {
+        if (activity?.photoCompleted == true && target != null && activity?.isUnlocked != true) {
             while (true) {
                 val now = TimeUtils.now()
                 if (now.isBefore(target)) {
@@ -274,6 +274,18 @@ fun ActivityDetailScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                repository.skipWaitForActivity(activityId)
+                                countdownText = null
+                                waitingUnlockAt = null
+                            }
+                        },
+                        modifier = Modifier.padding(top = 12.dp)
+                    ) {
+                        Text(text = stringResource(id = R.string.skip_wait))
+                    }
                 }
             }
         }

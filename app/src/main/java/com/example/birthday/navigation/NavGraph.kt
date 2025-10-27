@@ -49,6 +49,10 @@ fun CumpleNavHost(navController: NavHostController = rememberNavController()) {
                     if (TimeGate.isUnlocked()) {
                         navigateToTimeline()
                     }
+                },
+                onSkip = {
+                    TimeGate.forceUnlock()
+                    navigateToTimeline()
                 }
             )
             LaunchedEffect(remaining) {
