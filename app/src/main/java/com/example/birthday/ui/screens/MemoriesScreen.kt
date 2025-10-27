@@ -331,7 +331,7 @@ private fun MemoriesFilterRow(
                     Icon(
                         painter = ActivityIcons.painterForId(activity.id),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Color.Unspecified
                     )
                 },
                 colors = FilterChipDefaults.filterChipColors(
@@ -375,7 +375,7 @@ private fun MemoryActivityCard(
                         Icon(
                             painter = ActivityIcons.painterForId(activity.id),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = Color.Unspecified,
                             modifier = Modifier.padding(14.dp)
                         )
                     }
@@ -433,7 +433,7 @@ private fun EmptyMemoriesState() {
             Icon(
                 painter = ActivityIcons.painterForId(1),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = Color.Unspecified,
                 modifier = Modifier.padding(28.dp)
             )
         }
