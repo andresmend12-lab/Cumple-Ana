@@ -1,5 +1,6 @@
 package com.example.birthday.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,7 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,20 +56,40 @@ fun ActivityCard(
     }
 
     val isDisabled = !state.isAvailable
+    val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+
     val cardColor = if (isDisabled) {
-        backgroundColor.copy(alpha = 0.65f)
+        lerp(backgroundColor, surfaceVariant, 0.7f)
     } else {
         backgroundColor
     }
     val textColor = if (isDisabled) {
-        foregroundColor.copy(alpha = 0.7f)
+        lerp(foregroundColor, onSurfaceVariant, 0.75f)
     } else {
         foregroundColor
     }
-    val statusBadgeColor = Color.White.copy(alpha = if (isDisabled) 0.35f else 0.55f)
-    val statusBadgeTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isDisabled) 0.7f else 1f)
-    val iconBackgroundColor = Color.White.copy(alpha = if (isDisabled) 0.18f else 0.35f)
-    val iconAlpha = if (isDisabled) 0.6f else 1f
+    val statusBadgeColor = if (isDisabled) {
+        lerp(Color.White.copy(alpha = 0.55f), surfaceVariant, 0.65f)
+    } else {
+        Color.White.copy(alpha = 0.55f)
+    }
+    val statusBadgeTextColor = if (isDisabled) {
+        lerp(MaterialTheme.colorScheme.onSurface, onSurfaceVariant, 0.8f)
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val iconBackgroundColor = if (isDisabled) {
+        lerp(Color.White.copy(alpha = 0.35f), surfaceVariant, 0.75f)
+    } else {
+        Color.White.copy(alpha = 0.35f)
+    }
+    val iconAlpha = if (isDisabled) 0.65f else 1f
+    val iconColorFilter = if (isDisabled) {
+        ColorFilter.colorMatrix(DisabledIconColorMatrix)
+    } else {
+        null
+    }
 
     val primaryStatusText: String? = when (state.status) {
         ActivityTimelineStatus.BLOCKED_TIME ->
@@ -125,10 +148,10 @@ fun ActivityCard(
                 shape = CircleShape,
                 color = iconBackgroundColor
             ) {
-                Icon(
+                Image(
                     painter = iconPainter,
                     contentDescription = null,
-                    tint = Color.Unspecified,
+                    colorFilter = iconColorFilter,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(2.dp)
@@ -182,4 +205,8 @@ fun ActivityCard(
             }
         }
     }
+}
+
+private val DisabledIconColorMatrix = ColorMatrix().apply {
+    setToSaturation(0f)
 }
