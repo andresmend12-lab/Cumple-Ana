@@ -368,7 +368,7 @@ private fun MemoryActivityCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Surface(
-                        modifier = Modifier.size(56.dp),
+                        modifier = Modifier.size(112.dp),
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                     ) {
@@ -376,7 +376,9 @@ private fun MemoryActivityCard(
                             painter = ActivityIcons.painterForId(activity.id),
                             contentDescription = null,
                             tint = Color.Unspecified,
-                            modifier = Modifier.padding(14.dp)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp)
                         )
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

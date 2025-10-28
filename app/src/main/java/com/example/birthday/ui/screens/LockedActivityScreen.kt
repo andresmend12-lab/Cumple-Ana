@@ -88,7 +88,7 @@ fun LockedActivityScreen(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 8.dp)
-                        .size(48.dp)
+                        .size(96.dp)
                 )
                 Text(
                     text = state.activity.title,
