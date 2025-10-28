@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
 import com.example.birthday.R
+import kotlin.math.roundToInt
 
 object ActivityIcons {
     @Composable
@@ -28,9 +29,12 @@ object ActivityIcons {
             val width = safeDrawable.intrinsicWidth.takeIf { it > 0 } ?: DEFAULT_ICON_SIZE
             val height = safeDrawable.intrinsicHeight.takeIf { it > 0 } ?: DEFAULT_ICON_SIZE
 
+            val scaledWidth = (width * ICON_SCALE_FACTOR).roundToInt().coerceAtLeast(width)
+            val scaledHeight = (height * ICON_SCALE_FACTOR).roundToInt().coerceAtLeast(height)
+
             val bitmap = safeDrawable.toBitmap(
-                width = width,
-                height = height,
+                width = scaledWidth,
+                height = scaledHeight,
                 config = Bitmap.Config.ARGB_8888
             )
 
@@ -55,4 +59,5 @@ object ActivityIcons {
     private val FALLBACK_ICON_ID: Int = R.mipmap.ic_regalo
 
     private const val DEFAULT_ICON_SIZE: Int = 256
+    private const val ICON_SCALE_FACTOR: Float = 2f
 }

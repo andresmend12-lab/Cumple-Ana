@@ -104,7 +104,7 @@ fun ActivityCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(112.dp),
+                modifier = Modifier.size(56.dp),
                 shape = CircleShape,
                 color = Color.White.copy(alpha = 0.35f)
             ) {
@@ -114,7 +114,7 @@ fun ActivityCard(
                     tint = Color.Unspecified,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp)
+                        .padding(2.dp)
                 )
             }
             Column(
