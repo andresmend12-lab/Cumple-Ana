@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +51,22 @@ fun ActivityCard(
         ActivityTimelineStatus.PENDING_PHOTO -> MaterialTheme.colorScheme.onSecondaryContainer
         ActivityTimelineStatus.BLOCKED_TIME -> MaterialTheme.colorScheme.onSurfaceVariant
     }
+
+    val isDisabled = !state.isAvailable
+    val cardColor = if (isDisabled) {
+        backgroundColor.copy(alpha = 0.65f)
+    } else {
+        backgroundColor
+    }
+    val textColor = if (isDisabled) {
+        foregroundColor.copy(alpha = 0.7f)
+    } else {
+        foregroundColor
+    }
+    val statusBadgeColor = Color.White.copy(alpha = if (isDisabled) 0.35f else 0.55f)
+    val statusBadgeTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isDisabled) 0.7f else 1f)
+    val iconBackgroundColor = Color.White.copy(alpha = if (isDisabled) 0.18f else 0.35f)
+    val iconAlpha = if (isDisabled) 0.6f else 1f
 
     val primaryStatusText: String? = when (state.status) {
         ActivityTimelineStatus.BLOCKED_TIME ->
@@ -93,7 +110,7 @@ fun ActivityCard(
             }
         },
         shape = RoundedCornerShape(28.dp),
-        color = backgroundColor,
+        color = cardColor,
         tonalElevation = 4.dp
     ) {
         Row(
@@ -106,7 +123,7 @@ fun ActivityCard(
             Surface(
                 modifier = Modifier.size(56.dp),
                 shape = CircleShape,
-                color = Color.White.copy(alpha = 0.35f)
+                color = iconBackgroundColor
             ) {
                 Icon(
                     painter = iconPainter,
@@ -115,6 +132,7 @@ fun ActivityCard(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(2.dp)
+                        .graphicsLayer(alpha = iconAlpha)
                 )
             }
             Column(
@@ -124,17 +142,17 @@ fun ActivityCard(
                 Text(
                     text = activity.title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = foregroundColor
+                    color = textColor
                 )
                 primaryStatusText?.let { statusText ->
                     Surface(
                         shape = RoundedCornerShape(50),
-                        color = Color.White.copy(alpha = 0.55f)
+                        color = statusBadgeColor
                     ) {
                         Text(
                             text = statusText,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = statusBadgeTextColor,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -143,14 +161,14 @@ fun ActivityCard(
                     Text(
                         text = message,
                         style = MaterialTheme.typography.bodySmall,
-                        color = foregroundColor
+                        color = textColor
                     )
                 }
                 countdown?.let { remaining ->
                     Text(
                         text = remaining,
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, fontWeight = FontWeight.Medium),
-                        color = foregroundColor
+                        color = textColor
                     )
                 }
                 if (showSkipButton) {
