@@ -48,7 +48,7 @@ object ActivityIcons {
         2 -> R.mipmap.ic_desayuno_foreground
         3 -> R.mipmap.ic_relax_foreground
         4 -> R.mipmap.ic_cafe_foreground
-        5 -> R.mipmap.ic_regalo
+        5 -> R.drawable.ic_cake
         6 -> R.mipmap.ic_perfume_foreground
         7 -> R.mipmap.ic_collar_foreground
         8 -> R.mipmap.ic_sushi_foreground
