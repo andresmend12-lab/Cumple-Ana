@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import com.example.birthday.R
+import com.example.birthday.config.FeatureFlags
 import com.example.birthday.data.model.ActivityLockReason
 import com.example.birthday.data.model.ActivityTimelineState
 import com.example.birthday.data.model.ActivityTimelineStatus
@@ -119,7 +120,8 @@ fun ActivityCard(
         }
     }
 
-    val showSkipButton = onSkipTimer != null &&
+    val showSkipButton = FeatureFlags.SHOW_SKIP_WAIT_BUTTONS &&
+        onSkipTimer != null &&
         state.status == ActivityTimelineStatus.BLOCKED_TIME &&
         state.previousCompleted
 

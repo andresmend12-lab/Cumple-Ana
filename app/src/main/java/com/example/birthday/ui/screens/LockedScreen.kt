@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.birthday.R
+import com.example.birthday.config.FeatureFlags
 import com.example.birthday.ui.components.ConfettiCanvas
 import java.util.concurrent.TimeUnit
 
@@ -62,8 +63,10 @@ fun LockedScreen(
                 Button(onClick = onCheckAgain, modifier = Modifier.padding(top = 24.dp)) {
                     Text(text = stringResource(id = R.string.check_again))
                 }
-                Button(onClick = onSkip, modifier = Modifier.padding(top = 12.dp)) {
-                    Text(text = stringResource(id = R.string.skip_wait))
+                if (FeatureFlags.SHOW_SKIP_WAIT_BUTTONS) {
+                    Button(onClick = onSkip, modifier = Modifier.padding(top = 12.dp)) {
+                        Text(text = stringResource(id = R.string.skip_wait))
+                    }
                 }
             }
         }
