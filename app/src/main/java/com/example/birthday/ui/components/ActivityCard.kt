@@ -1,32 +1,37 @@
 package com.example.birthday.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.example.birthday.R
 import com.example.birthday.data.model.ActivityLockReason
 import com.example.birthday.data.model.ActivityTimelineState
 import com.example.birthday.data.model.ActivityTimelineStatus
 import com.example.birthday.util.TimeUtils
-import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
 
 @Composable
 fun ActivityCard(
@@ -48,6 +53,42 @@ fun ActivityCard(
         ActivityTimelineStatus.AVAILABLE -> MaterialTheme.colorScheme.onPrimaryContainer
         ActivityTimelineStatus.PENDING_PHOTO -> MaterialTheme.colorScheme.onSecondaryContainer
         ActivityTimelineStatus.BLOCKED_TIME -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    val isDisabled = !state.isAvailable
+    val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+
+    val cardColor = if (isDisabled) {
+        lerp(backgroundColor, surfaceVariant, 0.7f)
+    } else {
+        backgroundColor
+    }
+    val textColor = if (isDisabled) {
+        lerp(foregroundColor, onSurfaceVariant, 0.75f)
+    } else {
+        foregroundColor
+    }
+    val statusBadgeColor = if (isDisabled) {
+        lerp(Color.White.copy(alpha = 0.55f), surfaceVariant, 0.65f)
+    } else {
+        Color.White.copy(alpha = 0.55f)
+    }
+    val statusBadgeTextColor = if (isDisabled) {
+        lerp(MaterialTheme.colorScheme.onSurface, onSurfaceVariant, 0.8f)
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val iconBackgroundColor = if (isDisabled) {
+        lerp(Color.White.copy(alpha = 0.35f), surfaceVariant, 0.75f)
+    } else {
+        Color.White.copy(alpha = 0.35f)
+    }
+    val iconAlpha = if (isDisabled) 0.65f else 1f
+    val iconColorFilter = if (isDisabled) {
+        ColorFilter.colorMatrix(DisabledIconColorMatrix)
+    } else {
+        null
     }
 
     val primaryStatusText: String? = when (state.status) {
@@ -92,7 +133,7 @@ fun ActivityCard(
             }
         },
         shape = RoundedCornerShape(28.dp),
-        color = backgroundColor,
+        color = cardColor,
         tonalElevation = 4.dp
     ) {
         Row(
@@ -105,15 +146,16 @@ fun ActivityCard(
             Surface(
                 modifier = Modifier.size(56.dp),
                 shape = CircleShape,
-                color = Color.White.copy(alpha = 0.35f)
+                color = iconBackgroundColor
             ) {
-                Icon(
+                Image(
                     painter = iconPainter,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    colorFilter = iconColorFilter,
                     modifier = Modifier
-                        .size(56.dp)
-                        .padding(14.dp)
+                        .fillMaxSize()
+                        .padding(2.dp)
+                        .graphicsLayer(alpha = iconAlpha)
                 )
             }
             Column(
@@ -123,17 +165,17 @@ fun ActivityCard(
                 Text(
                     text = activity.title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = foregroundColor
+                    color = textColor
                 )
                 primaryStatusText?.let { statusText ->
                     Surface(
                         shape = RoundedCornerShape(50),
-                        color = Color.White.copy(alpha = 0.55f)
+                        color = statusBadgeColor
                     ) {
                         Text(
                             text = statusText,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = statusBadgeTextColor,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -142,14 +184,14 @@ fun ActivityCard(
                     Text(
                         text = message,
                         style = MaterialTheme.typography.bodySmall,
-                        color = foregroundColor
+                        color = textColor
                     )
                 }
                 countdown?.let { remaining ->
                     Text(
                         text = remaining,
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, fontWeight = FontWeight.Medium),
-                        color = foregroundColor
+                        color = textColor
                     )
                 }
                 if (showSkipButton) {
@@ -163,4 +205,8 @@ fun ActivityCard(
             }
         }
     }
+}
+
+private val DisabledIconColorMatrix = ColorMatrix().apply {
+    setToSaturation(0f)
 }

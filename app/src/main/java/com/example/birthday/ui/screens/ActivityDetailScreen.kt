@@ -163,8 +163,8 @@ fun ActivityDetailScreen(
                 Icon(
                     painter = ActivityIcons.painterForId(activity?.id ?: 0),
                     contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(120.dp)
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(200.dp)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
