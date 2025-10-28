@@ -1,31 +1,25 @@
 package com.example.birthday.ui.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Cake
-import androidx.compose.material.icons.rounded.Celebration
-import androidx.compose.material.icons.rounded.Coffee
-import androidx.compose.material.icons.rounded.Diamond
-import androidx.compose.material.icons.rounded.EmojiEvents
-import androidx.compose.material.icons.rounded.FreeBreakfast
-import androidx.compose.material.icons.rounded.Spa
-import androidx.compose.material.icons.rounded.VolunteerActivism
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import com.example.birthday.R
 
 object ActivityIcons {
     @Composable
-    fun painterForId(id: Int): Painter = when (id) {
-        1 -> painterResource(id = R.drawable.ic_crown)
-        2 -> rememberVectorPainter(Icons.Rounded.FreeBreakfast)
-        3 -> rememberVectorPainter(Icons.Rounded.VolunteerActivism)
-        4 -> rememberVectorPainter(Icons.Rounded.Coffee)
-        5 -> rememberVectorPainter(Icons.Rounded.Cake)
-        6 -> rememberVectorPainter(Icons.Rounded.Spa)
-        7 -> rememberVectorPainter(Icons.Rounded.Diamond)
-        8 -> painterResource(id = R.drawable.ic_chopsticks)
-        else -> rememberVectorPainter(Icons.Rounded.Celebration)
+    fun painterForId(id: Int): Painter = painterResource(id = iconFor(id))
+
+    @DrawableRes
+    private fun iconFor(id: Int): Int = when (id) {
+        1 -> R.drawable.ic_crown
+        2 -> R.drawable.ic_breakfast
+        3 -> R.drawable.ic_relax
+        4 -> R.drawable.ic_coffee
+        5 -> R.drawable.ic_cake
+        6 -> R.drawable.ic_perfume
+        7 -> R.drawable.ic_necklace
+        8 -> R.drawable.ic_sushi
+        else -> R.drawable.ic_gift_box
     }
 }
