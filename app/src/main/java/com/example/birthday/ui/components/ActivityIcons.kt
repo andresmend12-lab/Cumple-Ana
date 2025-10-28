@@ -52,7 +52,7 @@ object ActivityIcons {
     }
 
     @DrawableRes
-    private const val FALLBACK_ICON_ID: Int = R.mipmap.ic_regalo
+    private val FALLBACK_ICON_ID: Int = R.mipmap.ic_regalo
 
     private const val DEFAULT_ICON_SIZE: Int = 256
 }
