@@ -12,14 +12,14 @@ object ActivityIcons {
 
     @DrawableRes
     private fun iconFor(id: Int): Int = when (id) {
-        1 -> R.drawable.ic_crown
-        2 -> R.drawable.ic_breakfast
-        3 -> R.drawable.ic_relax
-        4 -> R.drawable.ic_coffee
-        5 -> R.drawable.ic_cake
-        6 -> R.drawable.ic_perfume
-        7 -> R.drawable.ic_necklace
-        8 -> R.drawable.ic_sushi
-        else -> R.drawable.ic_gift_box
+        1 -> R.mipmap.ic_corona_foreground
+        2 -> R.mipmap.ic_desayuno_foreground
+        3 -> R.mipmap.ic_relax_foreground
+        4 -> R.mipmap.ic_cafe_foreground
+        5 -> R.mipmap.ic_regalo
+        6 -> R.mipmap.ic_perfume_foreground
+        7 -> R.mipmap.ic_collar_foreground
+        8 -> R.mipmap.ic_sushi_foreground
+        else -> R.mipmap.ic_regalo
     }
 }
