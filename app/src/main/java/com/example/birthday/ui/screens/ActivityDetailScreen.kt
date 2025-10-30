@@ -56,6 +56,7 @@ import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.layout.ContentScale
 import com.example.birthday.R
+import com.example.birthday.config.FeatureFlags
 import com.example.birthday.camera.PhotoCapture
 import com.example.birthday.data.model.ActivityCompletionResult
 import com.example.birthday.data.repo.CumpleRepository
@@ -274,17 +275,19 @@ fun ActivityDetailScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                repository.skipWaitForActivity(activityId)
-                                countdownText = null
-                                waitingUnlockAt = null
-                            }
-                        },
-                        modifier = Modifier.padding(top = 12.dp)
-                    ) {
-                        Text(text = stringResource(id = R.string.skip_wait))
+                    if (FeatureFlags.SHOW_SKIP_WAIT_BUTTONS) {
+                        Button(
+                            onClick = {
+                                coroutineScope.launch {
+                                    repository.skipWaitForActivity(activityId)
+                                    countdownText = null
+                                    waitingUnlockAt = null
+                                }
+                            },
+                            modifier = Modifier.padding(top = 12.dp)
+                        ) {
+                            Text(text = stringResource(id = R.string.skip_wait))
+                        }
                     }
                 }
             }

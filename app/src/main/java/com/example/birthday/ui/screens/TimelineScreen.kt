@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.birthday.R
+import com.example.birthday.config.FeatureFlags
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityCard
 import kotlinx.coroutines.launch
@@ -82,6 +83,15 @@ fun TimelineScreen(
                 }
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(timelineStates, key = { it.activity.id }) { state ->
+                        val skipAction: (() -> Unit)? = if (FeatureFlags.SHOW_SKIP_WAIT_BUTTONS) {
+                            {
+                                scope.launch {
+                                    repository.skipWaitForActivity(state.activity.id)
+                                }
+                            }
+                        } else {
+                            null
+                        }
                         ActivityCard(
                             state = state,
                             onClick = {
@@ -89,11 +99,7 @@ fun TimelineScreen(
                                     onOpenActivity(state.activity.id)
                                 }
                             },
-                            onSkipTimer = {
-                                scope.launch {
-                                    repository.skipWaitForActivity(state.activity.id)
-                                }
-                            }
+                            onSkipTimer = skipAction
                         )
                     }
                 }

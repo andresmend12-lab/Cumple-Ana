@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.birthday.R
+import com.example.birthday.config.FeatureFlags
 import com.example.birthday.data.model.ActivityLockReason
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityIcons
@@ -110,7 +111,7 @@ fun LockedActivityScreen(
                 Button(onClick = onBack) {
                     Text(text = stringResource(id = R.string.back))
                 }
-                if (canSkip) {
+                if (FeatureFlags.SHOW_SKIP_WAIT_BUTTONS && canSkip) {
                     Button(
                         onClick = {
                             scope.launch {
