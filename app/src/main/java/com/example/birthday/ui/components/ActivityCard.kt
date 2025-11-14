@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -195,12 +194,10 @@ fun ActivityCard(
                     )
                 }
                 if (showSkipButton) {
-                    Button(
-                        onClick = { onSkipTimer?.invoke() },
+                    SkipWaitAccessIcon(
+                        onSkipConfirmed = { onSkipTimer?.invoke() },
                         modifier = Modifier.padding(top = 8.dp)
-                    ) {
-                        Text(text = stringResource(id = R.string.skip_wait))
-                    }
+                    )
                 }
             }
         }

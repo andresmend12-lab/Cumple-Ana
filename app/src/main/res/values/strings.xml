@@ -3,6 +3,11 @@
     <string name="locked_message">Se desbloquea el 03/12/2025 a las 00:00 (Europe/Madrid)</string>
     <string name="check_again">Comprobar de nuevo</string>
     <string name="skip_wait">Saltar espera</string>
+    <string name="skip_wait_code_title">Introduce el código</string>
+    <string name="skip_wait_code_label">Código de acceso</string>
+    <string name="skip_wait_code_error">El código no es correcto. Inténtalo de nuevo.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
     <string name="take_photo">Hacer foto</string>
     <string name="retake_photo">Rehacer</string>
     <string name="save_photo">Guardar</string>

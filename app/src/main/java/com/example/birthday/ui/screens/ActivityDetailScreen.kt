@@ -63,6 +63,7 @@ import com.example.birthday.ui.components.ActivityCelebrationDialog
 import com.example.birthday.ui.components.ActivityCelebrationState
 import com.example.birthday.ui.components.ActivityIcons
 import com.example.birthday.ui.components.PhotoGrid
+import com.example.birthday.ui.components.SkipWaitAccessIcon
 import com.example.birthday.util.DateUtils
 import com.example.birthday.util.TimeUtils
 import kotlinx.coroutines.delay
@@ -274,8 +275,8 @@ fun ActivityDetailScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Button(
-                        onClick = {
+                    SkipWaitAccessIcon(
+                        onSkipConfirmed = {
                             coroutineScope.launch {
                                 repository.skipWaitForActivity(activityId)
                                 countdownText = null
@@ -283,9 +284,7 @@ fun ActivityDetailScreen(
                             }
                         },
                         modifier = Modifier.padding(top = 12.dp)
-                    ) {
-                        Text(text = stringResource(id = R.string.skip_wait))
-                    }
+                    )
                 }
             }
         }
