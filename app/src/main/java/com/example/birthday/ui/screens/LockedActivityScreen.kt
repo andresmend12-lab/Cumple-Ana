@@ -27,6 +27,7 @@ import com.example.birthday.R
 import com.example.birthday.data.model.ActivityLockReason
 import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.ActivityIcons
+import com.example.birthday.ui.components.SkipWaitAccessIcon
 import com.example.birthday.util.TimeUtils
 import kotlinx.coroutines.launch
 
@@ -111,16 +112,14 @@ fun LockedActivityScreen(
                     Text(text = stringResource(id = R.string.back))
                 }
                 if (canSkip) {
-                    Button(
-                        onClick = {
+                    SkipWaitAccessIcon(
+                        onSkipConfirmed = {
                             scope.launch {
                                 repository.skipWaitForActivity(activityId)
                                 onBack()
                             }
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.skip_wait))
-                    }
+                    )
                 }
             }
         }
