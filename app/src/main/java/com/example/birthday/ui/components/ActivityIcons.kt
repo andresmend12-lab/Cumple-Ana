@@ -49,7 +49,8 @@ object ActivityIcons {
         3 -> R.mipmap.ic_relax_foreground
         4 -> R.mipmap.ic_cafe_foreground
         5 -> R.mipmap.ic_cake_foreground
-        6 -> R.mipmap.ic_perfume_foreground
+        // La actividad 6 ahora es el regalo del monitor.
+        6 -> R.mipmap.ic_monitor_foreground
         7 -> R.mipmap.ic_collar_foreground
         8 -> R.mipmap.ic_sushi_foreground
         else -> FALLBACK_ICON_ID

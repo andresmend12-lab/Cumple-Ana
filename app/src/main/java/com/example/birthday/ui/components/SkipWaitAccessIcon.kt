@@ -25,7 +25,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.birthday.R
 
-private const val SkipWaitAccessCode = "02468"
+// Actualizamos la contraseña de acceso manteniendo el tipo String para conservar ceros iniciales.
+private const val SkipWaitAccessCode = "031296"
 
 @Composable
 fun SkipWaitAccessIcon(
