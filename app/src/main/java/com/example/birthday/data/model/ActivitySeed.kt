@@ -60,8 +60,9 @@ object ActivitySeeds {
         Seed(
             id = 6,
             order = 6,
-            title = "Siempre divina",
-            description = "Siempre divina. A veces por perfume, siempre por naturaleza.",
+            // Reemplazamos la actividad de perfume por el regalo del monitor manteniendo horario y orden.
+            title = "Todo se ve mejor así",
+            description = "Para que sigas viendo tu mundo a lo grande.\nUna sorpresa enorme para hacer tus días un poco más luminosos.",
             unlockAt = ZonedDateTime.of(2025, 12, 3, 16, 30, 0, 0, zoneId)
         ),
         Seed(
