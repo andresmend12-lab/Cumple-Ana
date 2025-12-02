@@ -19,12 +19,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.birthday.R
 import com.example.birthday.ui.components.ConfettiCanvas
+import com.example.birthday.ui.components.SkipWaitAccessIcon
 import java.util.concurrent.TimeUnit
 
 @Composable
 fun LockedScreen(
     remainingSeconds: Long,
-    onCheckAgain: () -> Unit
+    onCheckAgain: () -> Unit,
+    onSkip: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ConfettiCanvas(
@@ -61,6 +63,10 @@ fun LockedScreen(
                 Button(onClick = onCheckAgain, modifier = Modifier.padding(top = 24.dp)) {
                     Text(text = stringResource(id = R.string.check_again))
                 }
+                SkipWaitAccessIcon(
+                    onSkipConfirmed = onSkip,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
             }
         }
     }
