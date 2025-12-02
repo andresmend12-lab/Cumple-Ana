@@ -40,6 +40,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+<<<<<<< HEAD
+=======
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+>>>>>>> 9a89eb76a4ea0be0e8bbac98c011fc775f729272
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +67,14 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.birthday.R
 import com.example.birthday.data.model.ActivityEntity
 import com.example.birthday.data.repo.CumpleRepository
+<<<<<<< HEAD
 import com.example.birthday.ui.components.ActivityIcons
+=======
+import com.example.birthday.gate.TimeGate
+import java.time.Duration
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+>>>>>>> 9a89eb76a4ea0be0e8bbac98c011fc775f729272
 
 @Composable
 fun MemoriesScreen(
@@ -178,6 +190,9 @@ fun MemoriesScreen(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+        NextBirthdayCountdown()
     }
 
     selectedPhoto?.let { uri ->
@@ -191,6 +206,7 @@ fun MemoriesScreen(
 }
 
 @Composable
+<<<<<<< HEAD
 private fun MemoriesTopBar(onBack: () -> Unit, canShare: Boolean, onShareAll: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -211,11 +227,44 @@ private fun MemoriesTopBar(onBack: () -> Unit, canShare: Boolean, onShareAll: ()
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = stringResource(id = R.string.memories_share_all))
             }
+=======
+private fun NextBirthdayCountdown() {
+    val remainingFlow = remember { MutableStateFlow(Duration.ZERO) }
+    val remaining by remainingFlow.collectAsState()
+
+    LaunchedEffect(Unit) {
+        TimeGate.nextBirthdayCountdownFlow().collectLatest { duration ->
+            remainingFlow.value = duration
+        }
+    }
+
+    val safeDuration = if (remaining.isNegative) Duration.ZERO else remaining
+    val totalSeconds = safeDuration.seconds
+    val days = totalSeconds / (24 * 3600)
+    val hours = (totalSeconds % (24 * 3600)) / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    Surface(shape = RoundedCornerShape(24.dp), tonalElevation = 4.dp, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text = stringResource(id = R.string.next_birthday_title), style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = stringResource(
+                    id = R.string.next_birthday_countdown,
+                    days,
+                    hours,
+                    minutes,
+                    seconds
+                ),
+                style = MaterialTheme.typography.titleMedium
+            )
+>>>>>>> 9a89eb76a4ea0be0e8bbac98c011fc775f729272
         }
     }
 }
 
 @Composable
+<<<<<<< HEAD
 private fun LatestMemoryHighlight(totalPhotos: Int, uri: Uri, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(32.dp),
@@ -274,6 +323,28 @@ private fun LatestMemoryHighlight(totalPhotos: Int, uri: Uri, onClick: () -> Uni
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.9f)
                     )
+=======
+private fun PhotoFullScreen(uri: Uri, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp) {
+            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    painter = rememberAsyncImagePainter(uri),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(360.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(onClick = { shareUri(context, uri, "image/jpeg") }) {
+                        Text(text = stringResource(id = R.string.share))
+                    }
+                    Button(onClick = onDismiss) {
+                        Text(text = stringResource(id = R.string.back))
+                    }
+>>>>>>> 9a89eb76a4ea0be0e8bbac98c011fc775f729272
                 }
             }
         }
