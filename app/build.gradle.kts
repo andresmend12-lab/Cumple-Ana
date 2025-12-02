@@ -5,7 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
 }
-
+ 
 android {
     namespace = "com.example.birthday"
     compileSdk = 34
