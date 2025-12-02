@@ -32,6 +32,28 @@ class CumpleRepository(
 
     fun observeAllPhotos(): Flow<List<PhotoEntity>> = photoDao.observeAllPhotos()
 
+    suspend fun areAllActivitiesCompleted(): Boolean {
+        val activities = activityDao.getActivities()
+        return activities.isNotEmpty() && activities.all { it.isCompleted }
+    }
+
+    fun observePhotosByYear(): Flow<Map<Int, List<PhotoEntity>>> {
+        return photoDao.observeAllPhotos().map { photos ->
+            photos.groupBy { photo ->
+                val date = Instant.ofEpochMilli(photo.createdAt).atZone(TimeUtils.zoneId)
+                date.year
+            }
+        }
+    }
+
+    fun observePhotosForYear(year: Int): Flow<List<PhotoEntity>> {
+        return photoDao.observeAllPhotos().map { photos ->
+            photos.filter {
+                Instant.ofEpochMilli(it.createdAt).atZone(TimeUtils.zoneId).year == year
+            }
+        }
+    }
+
     fun observeTimelineState(zoneId: ZoneId = TimeUtils.zoneId): Flow<List<ActivityTimelineState>> {
         return combine(activityDao.observeActivities(), tickerFlow()) { activities, _ ->
             val now = TimeUtils.now(zoneId)
@@ -47,7 +69,17 @@ class CumpleRepository(
                 createdAt = createdAt
             )
         )
-        markPhotoCompleted(activityId, TimeUtils.now())
+        if (activityId > 0) {
+            markPhotoCompleted(activityId, TimeUtils.now())
+        }
+    }
+
+    // NUEVO: Función para borrar foto
+    suspend fun deletePhoto(photo: PhotoEntity) {
+        photoDao.delete(photo)
+        // Opcional: Si se borran todas las fotos, ¿debería desmarcarse la actividad?
+        // Por ahora mantenemos el estado 'photoCompleted' como true si alguna vez se completó, 
+        // para no bloquear al usuario si borra fotos después de terminar.
     }
 
     suspend fun markPhotoCompleted(activityId: Int, now: ZonedDateTime = TimeUtils.now()) {
@@ -72,9 +104,13 @@ class CumpleRepository(
     suspend fun tryCompleteActivity(activityId: Int, now: ZonedDateTime = TimeUtils.now()): ActivityCompletionResult {
         val activities = activityDao.getActivities().sortedBy { it.order }
         val activity = activities.firstOrNull { it.id == activityId } ?: return ActivityCompletionResult.NotFound
-        if (!activity.photoCompleted) {
+
+        // Verificamos si hay fotos actualmente (opcional, pero más seguro)
+        val hasPhotos = observePhotos(activityId).first().isNotEmpty()
+        if (!activity.photoCompleted && !hasPhotos) {
             return ActivityCompletionResult.PhotoMissing
         }
+
         val previousCompleted = activities.filter { it.order < activity.order }.all { it.isCompleted }
         if (!previousCompleted) {
             return ActivityCompletionResult.PreviousIncomplete

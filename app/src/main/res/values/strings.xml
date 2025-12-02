@@ -53,5 +53,13 @@
     <string name="memories_section_photos">%1$d fotos</string>
     <string name="memories_empty_cta">Cuando captures tus sorpresas favoritas aparecerán aquí con todo su brillo.</string>
     <string name="memories_share_activity">Compartir recuerdos</string>
+    <string name="next_birthday_title">¡Próximo Cumpleaños!</string>
+    <string name="next_birthday_subtitle">La cuenta atrás ha comenzado de nuevo...</string>
+    <string name="memories_gallery_title">Galerías de Recuerdos</string>
+    <string name="gallery_year_title">Cumpleaños %1$d</string>
+    <string name="gallery_photo_count">%1$d fotos</string>
+    <string name="no_galleries_yet">Aún no hay galerías guardadas.</string>
+    <string name="gallery_header">Recuerdos del %1$d</string>
+    <string name="gallery_empty">No hay fotos de este año. ¡Añade alguna!</string>
     <string name="memories_open_external">Abrir en galería</string>
 </resources>

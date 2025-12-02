@@ -5,22 +5,21 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
 }
- 
+
 android {
     namespace = "com.example.birthday"
-    compileSdk = 34
+    compileSdk = 35 // UPDATED: Required by recent Compose libraries
 
     defaultConfig {
         applicationId = "com.example.birthday"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35 // UPDATED: Best practice to match compileSdk
         versionCode = 1
         versionName = "1.0"
 
         vectorDrawables {
             useSupportLibrary = true
         }
-
     }
 
     buildTypes {
@@ -116,4 +115,3 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
-

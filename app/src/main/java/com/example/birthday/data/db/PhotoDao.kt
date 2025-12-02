@@ -1,6 +1,7 @@
 package com.example.birthday.data.db
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.birthday.data.model.PhotoEntity
@@ -10,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface PhotoDao {
     @Insert
     suspend fun insert(photo: PhotoEntity): Long
+
+    @Delete
+    suspend fun delete(photo: PhotoEntity)
 
     @Query("SELECT * FROM photos WHERE activityId = :activityId ORDER BY createdAt ASC")
     fun observePhotos(activityId: Int): Flow<List<PhotoEntity>>

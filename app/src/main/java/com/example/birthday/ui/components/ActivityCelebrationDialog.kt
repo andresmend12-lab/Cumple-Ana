@@ -1,39 +1,20 @@
 package com.example.birthday.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Canvas // Importación que faltaba
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material.icons.rounded.CardGiftcard
 import androidx.compose.material.icons.rounded.Celebration
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,10 +25,11 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -71,15 +53,11 @@ fun ActivityCelebrationDialog(
     ) {
         Box(
             modifier = Modifier
-                .padding(horizontal = 24.dp, vertical = 32.dp)
-                .clip(RoundedCornerShape(36.dp))
+                .padding(24.dp)
+                .clip(RoundedCornerShape(32.dp))
                 .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color(0xFFFFB4A2),
-                            Color(0xFFFFD166),
-                            Color(0xFFFEE440)
-                        )
+                    Brush.linearGradient(
+                        listOf(Color(0xFFFFF0F5), Color(0xFFE6E6FA))
                     )
                 )
         ) {
@@ -89,105 +67,78 @@ fun ActivityCelebrationDialog(
                 ConfettiAnimation(modifier = Modifier.fillMaxSize())
             }
 
-            Surface(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
-                shape = RoundedCornerShape(28.dp),
-                color = Color.White.copy(alpha = 0.9f)
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 28.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                val infiniteTransition = rememberInfiniteTransition(label = "iconPulse")
+                val scale by infiniteTransition.animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.15f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(800, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "scale"
+                )
+
+                Surface(
+                    modifier = Modifier.size(110.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shadowElevation = 6.dp
                 ) {
-                    val infiniteTransition = rememberInfiniteTransition(label = "gift")
-                    val pulse by infiniteTransition.animateFloat(
-                        initialValue = 0.85f,
-                        targetValue = 1.05f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 900, easing = LinearEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "giftPulse"
-                    )
-
-                    Surface(
-                        modifier = Modifier.size(96.dp),
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
-                    ) {
+                    Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            painter = rememberVectorPainter(
-                                if (state.isFinal) Icons.Rounded.Cake else Icons.Rounded.CardGiftcard
-                            ),
+                            imageVector = if (state.isFinal) Icons.Rounded.EmojiEvents else Icons.Rounded.CardGiftcard,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
-                                .padding(20.dp)
-                                .scale(pulse)
+                                .size(56.dp)
+                                .scale(scale),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
+                }
 
-                    val title = if (state.isFinal) {
-                        MaterialTheme.typography.headlineSmall
-                    } else {
-                        MaterialTheme.typography.headlineSmall
-                    }
-
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Text(
-                        text = if (state.isFinal) {
-                            stringResource(id = R.string.celebration_final_title)
-                        } else {
-                            stringResource(id = R.string.celebration_completed_title)
-                        },
-                        style = title.copy(fontWeight = FontWeight.ExtraBold)
+                        text = if (state.isFinal) stringResource(R.string.celebration_final_title)
+                        else stringResource(R.string.celebration_completed_title),
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
-                        text = if (state.isFinal) {
-                            stringResource(id = R.string.celebration_final_message)
-                        } else {
-                            stringResource(id = R.string.celebration_completed_message)
-                        },
+                        text = if (state.isFinal) stringResource(R.string.celebration_final_message)
+                        else stringResource(R.string.celebration_completed_message),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
 
-                    AnimatedVisibility(
-                        visible = !state.isFinal,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Celebration,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = stringResource(id = R.string.celebration_tagline),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-
-                    Button(onClick = onConfirm) {
-                        Text(
-                            text = if (state.isFinal) {
-                                stringResource(id = R.string.celebration_final_cta)
-                            } else {
-                                stringResource(id = R.string.celebration_completed_cta)
-                            }
-                        )
-                    }
+                Button(
+                    onClick = onConfirm,
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                ) {
+                    Text(
+                        text = if (state.isFinal) stringResource(R.string.celebration_final_cta)
+                        else stringResource(R.string.celebration_completed_cta),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
                 }
             }
         }

@@ -1,21 +1,15 @@
 package com.example.birthday.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Collections
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -31,56 +25,75 @@ import kotlinx.coroutines.launch
 fun TimelineScreen(
     repository: CumpleRepository,
     onOpenActivity: (Int) -> Unit,
-    onOpenAlbum: () -> Unit
+    onOpenAlbum: () -> Unit,
+    isReviewMode: Boolean = false,
+    onNavigateToFinal: () -> Unit
 ) {
     val timelineStates by repository.observeTimelineState().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .drawBehind {
-                val colors = listOf(
-                    Color(0xFFFFF9F2),
-                    Color(0xFFFFD166).copy(alpha = 0.15f),
-                    Color(0xFFFF6B6B).copy(alpha = 0.1f)
-                )
-                drawRect(Brush.verticalGradient(colors))
-                val waveHeight = size.height / 8f
-                val wavePaint = Brush.horizontalGradient(
-                    listOf(Color.Transparent, Color(0xFF06D6A0).copy(alpha = 0.12f))
-                )
-                for (i in 0..5) {
-                    drawRect(
-                        brush = wavePaint,
-                        topLeft = Offset(x = 0f, y = i * waveHeight),
-                        size = androidx.compose.ui.geometry.Size(width = size.width, height = waveHeight / 2f)
-                    )
-                }
+
+    // Solo redirigir si NO estamos revisando y todo está completo
+    val allCompleted = remember(timelineStates) {
+        timelineStates.isNotEmpty() && timelineStates.all { it.hasPhoto && it.activity.isCompleted }
+    }
+
+    LaunchedEffect(allCompleted, isReviewMode) {
+        if (allCompleted && !isReviewMode) {
+            onNavigateToFinal()
+        }
+    }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onOpenAlbum,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+            ) {
+                Icon(Icons.Rounded.Collections, contentDescription = "Álbum")
             }
-            .padding(top = 24.dp)
-    ) {
-        if (timelineStates.isEmpty()) {
-            Text(
-                text = "Cargando actividades...",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        } else {
-            Column {
-                Text(
-                    text = "¡Feliz cumple, Ana!",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color(0xFFFFF9F2), Color(0xFFFFE4E1))
+                    )
                 )
-                Button(
-                    onClick = onOpenAlbum,
-                    modifier = Modifier
-                        .padding(horizontal = 24.dp, vertical = 8.dp)
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Text(text = stringResource(id = R.string.view_album))
+                .padding(padding)
+        ) {
+            if (timelineStates.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(bottom = 100.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item {
+                        Column(modifier = Modifier.padding(24.dp)) {
+                            Text(
+                                text = "¡Feliz Cumple,",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                            Text(
+                                text = "Ana!",
+                                style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Black),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Tu día especial paso a paso.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
                     items(timelineStates, key = { it.activity.id }) { state ->
                         ActivityCard(
                             state = state,
@@ -93,8 +106,24 @@ fun TimelineScreen(
                                 scope.launch {
                                     repository.skipWaitForActivity(state.activity.id)
                                 }
-                            }
+                            },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                         )
+                    }
+
+                    if (isReviewMode) {
+                        item {
+                            Button(
+                                onClick = onNavigateToFinal,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp)
+                                    .height(56.dp),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                            ) {
+                                Text("Volver a la Pantalla Final")
+                            }
+                        }
                     }
                 }
             }
