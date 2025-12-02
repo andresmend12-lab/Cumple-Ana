@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,10 @@ import androidx.media3.ui.PlayerView
 import coil.compose.rememberAsyncImagePainter
 import com.example.birthday.R
 import com.example.birthday.data.repo.CumpleRepository
+import com.example.birthday.gate.TimeGate
+import java.time.Duration
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun MemoriesScreen(
@@ -126,10 +131,48 @@ fun MemoriesScreen(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+        NextBirthdayCountdown()
     }
 
     selectedPhoto?.let { uri ->
         PhotoFullScreen(uri = uri, onDismiss = { selectedPhoto = null })
+    }
+}
+
+@Composable
+private fun NextBirthdayCountdown() {
+    val remainingFlow = remember { MutableStateFlow(Duration.ZERO) }
+    val remaining by remainingFlow.collectAsState()
+
+    LaunchedEffect(Unit) {
+        TimeGate.nextBirthdayCountdownFlow().collectLatest { duration ->
+            remainingFlow.value = duration
+        }
+    }
+
+    val safeDuration = if (remaining.isNegative) Duration.ZERO else remaining
+    val totalSeconds = safeDuration.seconds
+    val days = totalSeconds / (24 * 3600)
+    val hours = (totalSeconds % (24 * 3600)) / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    Surface(shape = RoundedCornerShape(24.dp), tonalElevation = 4.dp, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text = stringResource(id = R.string.next_birthday_title), style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = stringResource(
+                    id = R.string.next_birthday_countdown,
+                    days,
+                    hours,
+                    minutes,
+                    seconds
+                ),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }
 
