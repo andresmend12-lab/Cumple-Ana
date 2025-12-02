@@ -13,6 +13,15 @@ object TimeGate {
 
     var targetDate: LocalDateTime = LocalDateTime.of(2025, 12, 3, 0, 0)
 
+    private fun nextTargetDate(now: ZonedDateTime): ZonedDateTime {
+        val thisYearTarget = targetDate.withYear(now.year).atZone(zone)
+        return if (now.isBefore(thisYearTarget)) {
+            thisYearTarget
+        } else {
+            thisYearTarget.plusYears(1)
+        }
+    }
+
     fun isUnlocked(now: ZonedDateTime = ZonedDateTime.now(zone)): Boolean {
         return !now.isBefore(targetDate.atZone(zone))
     }
@@ -30,6 +39,16 @@ object TimeGate {
             if (duration.isZero || duration.isNegative) {
                 break
             }
+            delay(1000)
+        }
+    }
+
+    fun nextBirthdayCountdownFlow(): Flow<Duration> = flow {
+        while (true) {
+            val now = ZonedDateTime.now(zone)
+            val target = nextTargetDate(now)
+            val duration = Duration.between(now, target)
+            emit(duration)
             delay(1000)
         }
     }

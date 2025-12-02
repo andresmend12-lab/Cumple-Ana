@@ -33,4 +33,6 @@
     <string name="add_more_photos">Añade recuerdos inolvidables con nuevas fotos.</string>
     <string name="back">Volver</string>
     <string name="camera_error">Error de cámara</string>
+    <string name="next_birthday_title">Próximo cumple</string>
+    <string name="next_birthday_countdown">Faltan %1$d días %2$02d:%3$02d:%4$02d</string>
 </resources>
