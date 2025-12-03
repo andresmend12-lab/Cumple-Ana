@@ -21,28 +21,69 @@ import kotlin.coroutines.resumeWithException
 
 class PhotoCapture(private val context: Context) {
     private val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> = ProcessCameraProvider.getInstance(context)
+    private var cameraProvider: ProcessCameraProvider? = null
+
+    // Verificar si la cámara existe
+    suspend fun hasCamera(lensFacing: Int): Boolean {
+        return try {
+            val provider = cameraProviderFuture.await(context)
+            provider.hasCamera(CameraSelector.Builder().requireLensFacing(lensFacing).build())
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    // Liberar recursos manualmente para evitar bloqueos en dispositivos reales
+    fun unbind() {
+        try {
+            cameraProvider?.unbindAll()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     suspend fun bind(
         previewView: PreviewView,
         lifecycleOwner: LifecycleOwner,
         lensFacing: Int
     ): ImageCapture {
-        val cameraProvider = cameraProviderFuture.await(context)
-        val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
+        val provider = cameraProviderFuture.await(context)
+        this.cameraProvider = provider
+
+        // Configuración de Preview
+        val preview = Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
+
+        // CAMBIO CRÍTICO: Eliminamos setCaptureMode explícito.
+        // Dejamos que CameraX decida la mejor configuración para el OnePlus 12.
         val imageCapture = ImageCapture.Builder()
             .setTargetRotation(previewView.display.rotation)
-            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .build()
+
+        // Fallback: Si no hay cámara frontal, usa la trasera
+        val finalLensFacing = if (provider.hasCamera(CameraSelector.Builder().requireLensFacing(lensFacing).build())) {
+            lensFacing
+        } else {
+            CameraSelector.LENS_FACING_BACK
+        }
+
         val selector = CameraSelector.Builder()
-            .requireLensFacing(lensFacing)
+            .requireLensFacing(finalLensFacing)
             .build()
-        cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(
-            lifecycleOwner,
-            selector,
-            preview,
-            imageCapture
-        )
+
+        try {
+            // Importante: Desvincular todo antes de volver a vincular
+            provider.unbindAll()
+            provider.bindToLifecycle(
+                lifecycleOwner,
+                selector,
+                preview,
+                imageCapture
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return imageCapture
     }
 
@@ -56,6 +97,7 @@ class PhotoCapture(private val context: Context) {
                 put(MediaStore.Images.Media.IS_PENDING, 1)
             }
         }
+
         val outputOptions = ImageCapture.OutputFileOptions.Builder(
             context.contentResolver,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -72,7 +114,7 @@ class PhotoCapture(private val context: Context) {
                         if (savedUri != null) {
                             continuation.resume(savedUri)
                         } else {
-                            continuation.resumeWithException(IllegalStateException("No URI returned"))
+                            continuation.resumeWithException(IllegalStateException("La URI de la foto es nula"))
                         }
                     }
 
@@ -89,15 +131,24 @@ class PhotoCapture(private val context: Context) {
             val values = ContentValues().apply {
                 put(MediaStore.Images.Media.IS_PENDING, 0)
             }
-            context.contentResolver.update(uri, values, null, null)
+            try {
+                context.contentResolver.update(uri, values, null, null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     fun discardPhoto(uri: Uri) {
-        context.contentResolver.delete(uri, null, null)
+        try {
+            context.contentResolver.delete(uri, null, null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
 
+// Extensión para facilitar el uso de Futures
 private suspend fun <T> ListenableFuture<T>.await(context: Context): T = suspendCancellableCoroutine { cont ->
     addListener({
         try {

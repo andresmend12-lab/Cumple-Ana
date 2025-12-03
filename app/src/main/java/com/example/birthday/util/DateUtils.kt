@@ -9,6 +9,7 @@ object DateUtils {
 
     fun generatePhotoName(activityOrder: Int, zoneId: ZoneId = ZoneId.of("Europe/Madrid")): String {
         val timestamp = LocalDateTime.now(zoneId).format(photoFormatter)
-        return "Ana_Act${'$'}activityOrder_${'$'}timestamp.jpg"
+        // CORREGIDO: Interpolación de strings correcta
+        return "Ana_Act${activityOrder}_${timestamp}.jpg"
     }
 }

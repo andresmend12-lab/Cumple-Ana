@@ -1,8 +1,13 @@
 package com.example.birthday.ui.screens
 
 import android.Manifest
+import android.content.ContentValues
+import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -15,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,8 +42,10 @@ import com.example.birthday.data.repo.CumpleRepository
 import com.example.birthday.ui.components.*
 import com.example.birthday.util.DateUtils
 import com.example.birthday.util.TimeUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -65,7 +73,6 @@ fun ActivityDetailScreen(
     var countdownText by remember { mutableStateOf<String?>(null) }
     var celebrationState by remember { mutableStateOf<ActivityCelebrationState?>(null) }
 
-    // Nuevo estado para el visor de pantalla completa
     var selectedPhotoUri by remember { mutableStateOf<Uri?>(null) }
 
     val photoCapture = remember { PhotoCapture(context) }
@@ -75,11 +82,35 @@ fun ActivityDetailScreen(
         )
     }
 
+    // Lanzador para la cámara
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         hasCameraPermission.value = granted
         if (granted) {
             lensFacing = CameraSelector.LENS_FACING_FRONT
             showCamera = true
+        }
+    }
+
+    // NUEVO: Lanzador para la galería
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            coroutineScope.launch {
+                val currentOrder = activity?.order ?: 999
+                // Importamos la foto copiándola a la carpeta de la app para persistencia
+                val savedUri = importGalleryImage(context, uri, currentOrder)
+                if (savedUri != null && activity != null) {
+                    repository.addPhoto(
+                        activityId = activity!!.id,
+                        uri = savedUri.toString(),
+                        createdAt = System.currentTimeMillis()
+                    )
+                    showPreviousIncomplete = false
+                } else {
+                    cameraError = "No se pudo importar la imagen"
+                }
+            }
         }
     }
 
@@ -172,23 +203,20 @@ fun ActivityDetailScreen(
 
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
-                // Grid de Fotos con opción de borrado y visor
+                // Grid de Fotos
                 PhotoGrid(
                     photos = photos,
                     onRemove = { photoEntity ->
                         coroutineScope.launch {
-                            // 1. Intentar borrar archivo físico
                             try {
                                 val uri = Uri.parse(photoEntity.uri)
                                 photoCapture.discardPhoto(uri)
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
-                            // 2. Borrar de la base de datos
                             repository.deletePhoto(photoEntity)
                         }
                     },
-                    // AGREGADO: Manejador para abrir la foto en grande
                     onClick = { photoEntity ->
                         runCatching { Uri.parse(photoEntity.uri) }.getOrNull()?.let {
                             selectedPhotoUri = it
@@ -199,22 +227,47 @@ fun ActivityDetailScreen(
                         .height(260.dp)
                 )
 
-                // Botón Foto
-                Button(
-                    onClick = {
-                        if (hasCameraPermission.value) {
-                            lensFacing = CameraSelector.LENS_FACING_FRONT
-                            showCamera = true
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = RoundedCornerShape(16.dp)
+                // Botones de Acción (Cámara y Galería)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(Icons.Default.CameraAlt, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = stringResource(id = R.string.take_photo))
+                    // Botón Cámara
+                    Button(
+                        onClick = {
+                            if (hasCameraPermission.value) {
+                                lensFacing = CameraSelector.LENS_FACING_FRONT
+                                showCamera = true
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Icon(Icons.Default.CameraAlt, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = stringResource(id = R.string.take_photo))
+                    }
+
+                    // Botón Galería
+                    FilledTonalButton(
+                        onClick = {
+                            galleryLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Icon(Icons.Default.PhotoLibrary, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Galería")
+                    }
                 }
 
                 // Cuenta atrás
@@ -254,7 +307,7 @@ fun ActivityDetailScreen(
                     }
                 }
 
-                // Botón Continuar (Solo si hay fotos)
+                // Botón Continuar
                 Button(
                     onClick = {
                         coroutineScope.launch {
@@ -272,9 +325,7 @@ fun ActivityDetailScreen(
                                 ActivityCompletionResult.PreviousIncomplete -> {
                                     showPreviousIncomplete = true
                                 }
-                                ActivityCompletionResult.PhotoMissing -> {
-                                    // No debería ocurrir si el botón está disabled
-                                }
+                                ActivityCompletionResult.PhotoMissing -> { }
                                 ActivityCompletionResult.NotFound -> {
                                     showPreviousIncomplete = false
                                     waitingUnlockAt = null
@@ -301,6 +352,7 @@ fun ActivityDetailScreen(
             imageCapture = imageCapture,
             onImageCapture = { imageCapture = it },
             onDismiss = {
+                photoCapture.unbind()
                 pendingPhoto?.let { photoCapture.discardPhoto(it) }
                 pendingPhoto = null
                 showCamera = false
@@ -308,12 +360,14 @@ fun ActivityDetailScreen(
             },
             onTakePhoto = { capture ->
                 coroutineScope.launch {
-                    val name = DateUtils.generatePhotoName(activity?.order ?: 0)
+                    val currentOrder = activity?.order ?: 999
+                    val name = DateUtils.generatePhotoName(currentOrder)
                     try {
                         val uri = photoCapture.takePhoto(capture, name)
                         pendingPhoto = uri
                     } catch (t: Throwable) {
-                        cameraError = t.localizedMessage
+                        t.printStackTrace()
+                        cameraError = "Error al capturar: ${t.localizedMessage}"
                     }
                 }
             },
@@ -328,6 +382,7 @@ fun ActivityDetailScreen(
                             createdAt = System.currentTimeMillis()
                         )
                     }
+                    photoCapture.unbind()
                     pendingPhoto = null
                     showCamera = false
                     imageCapture = null
@@ -359,7 +414,6 @@ fun ActivityDetailScreen(
         )
     }
 
-    // Visor de imagen en grande
     selectedPhotoUri?.let { uri ->
         FullScreenImageDialog(
             photoUri = uri,
@@ -374,5 +428,49 @@ fun ActivityDetailScreen(
             title = { Text(text = stringResource(id = R.string.camera_error)) },
             text = { Text(text = message ?: "") }
         )
+    }
+}
+
+/**
+ * Función auxiliar para copiar la imagen de la galería a la carpeta de la app
+ * y mantenerla segura como si fuera una foto tomada por la cámara.
+ */
+private suspend fun importGalleryImage(context: Context, sourceUri: Uri, activityOrder: Int): Uri? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val resolver = context.contentResolver
+            val name = DateUtils.generatePhotoName(activityOrder).replace(".jpg", "_gallery.jpg")
+
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/CumpleAna")
+                    put(MediaStore.Images.Media.IS_PENDING, 1)
+                }
+            }
+
+            val newUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+            if (newUri != null) {
+                resolver.openInputStream(sourceUri)?.use { input ->
+                    resolver.openOutputStream(newUri)?.use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    contentValues.clear()
+                    contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+                    resolver.update(newUri, contentValues, null, null)
+                }
+                newUri
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 }
